@@ -1,6 +1,9 @@
 package org.infrastructure.database;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 //https://www.sqlitetutorial.net/sqlite-java/
 
 public class DatabaseManagement {
@@ -10,7 +13,7 @@ public class DatabaseManagement {
             "jdbc:sqlite:src/main/java/org/infrastructure/database/database.db";
 
 
-    public static void  createTables(){
+    public static void createTables(){
 
 
         String sqlUser = "CREATE TABLE IF NOT EXISTS User(" +
@@ -80,6 +83,77 @@ public class DatabaseManagement {
             System.err.println(e.getMessage());
         }
 
+    }
+
+    public static ArrayList<ArrayList<String>>  userSearch(String name, String email){
+        String sql = "SELECT id,name,email FROM User WHERE name = ? AND email = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, email);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            ArrayList<String> ids  = new ArrayList<String>();
+            ArrayList<String> names  = new ArrayList<String>();
+            ArrayList<String> emails  = new ArrayList<String>();
+            ArrayList<ArrayList<String>> result  = new ArrayList<ArrayList<String>>();
+
+
+            while (rs.next()){
+                ids.add(rs.getString("id"));
+                names.add(rs.getString("name"));
+                emails.add(rs.getString("email"));
+                //Debug
+                System.out.printf("%-25s%-25s%-25s%n",
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getString("email")
+                );
+            }
+            //Insert lists to output list
+            result.add(ids);
+            result.add(names);
+            result.add(emails);
+            return result;
+
+        }
+        catch(Exception e){
+                System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static Boolean  userExist(String name,String email){
+
+        String sql = "SELECT id,name,email FROM User WHERE name = ? AND email = ? ";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, name);
+            pstmt.setString(2, email);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            ArrayList<String> names  = new ArrayList<String>();
+            ArrayList<String> emails  = new ArrayList<String>();
+            ArrayList<ArrayList<String>> result  = new ArrayList<ArrayList<String>>();
+
+
+            while (rs.next()){
+                names.add(rs.getString("name"));
+                emails.add(rs.getString("email"));
+
+            }
+            if(names.contains(name) && emails.contains(email)) return true;
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
 
