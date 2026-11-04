@@ -1,9 +1,13 @@
 package org.infrastructure.database;
 
+import org.domain.SaveProfile;
+import org.domain.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 //https://www.sqlitetutorial.net/sqlite-java/
 
 public class DatabaseManagement {
@@ -12,9 +16,7 @@ public class DatabaseManagement {
     private static final String URL =
             "jdbc:sqlite:src/main/java/org/infrastructure/database/database.db";
 
-
     public static void createTables(){
-
 
         String sqlUser = "CREATE TABLE IF NOT EXISTS User(" +
                 " id varchar primary key," +
@@ -85,7 +87,7 @@ public class DatabaseManagement {
 
     }
 
-    public static ArrayList<ArrayList<String>>  userSearch(String name, String email){
+    public static ArrayList<User>  userSearch(String name, String email){
         String sql = "SELECT id,name,email FROM User WHERE name = ? AND email = ?";
 
         try(Connection conn = DriverManager.getConnection(URL);
@@ -96,16 +98,13 @@ public class DatabaseManagement {
 
             ResultSet rs = pstmt.executeQuery();
 
-            ArrayList<String> ids  = new ArrayList<String>();
-            ArrayList<String> names  = new ArrayList<String>();
-            ArrayList<String> emails  = new ArrayList<String>();
-            ArrayList<ArrayList<String>> result  = new ArrayList<ArrayList<String>>();
+            ArrayList<User> result  = new ArrayList<User>();
 
 
             while (rs.next()){
-                ids.add(rs.getString("id"));
-                names.add(rs.getString("name"));
-                emails.add(rs.getString("email"));
+
+                result.add(new User(rs.getString("id"),rs.getString("name"),rs.getString("email")));
+
                 //Debug
                 System.out.printf("%-25s%-25s%-25s%n",
                         rs.getString("id"),
@@ -114,9 +113,6 @@ public class DatabaseManagement {
                 );
             }
             //Insert lists to output list
-            result.add(ids);
-            result.add(names);
-            result.add(emails);
             return result;
 
         }
@@ -155,6 +151,61 @@ public class DatabaseManagement {
         }
         return false;
     }
+
+    public static void saveProfileInsert(String user_id,String save_id, String name, Double saving_rate ){
+
+        String sql = "INSERT INTO SaveProfile(save_id, id, name, savings_rate) VALUES (?,?,?,?)";
+
+        try(Connection conn =  DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1,save_id);
+            pstmt.setString(2,user_id);
+            pstmt.setString(3,name);
+            pstmt.setDouble(4,saving_rate);
+            pstmt.executeUpdate();  //run the INSERT statement
+
+            System.out.println("SaveProfile was in DB insert");
+        }
+        catch (Exception e){
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static ArrayList<SaveProfile> saveProfileSearch(String user_id){
+        String sql = "SELECT save_id, id, name, savings_rate FROM SaveProfile WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            ArrayList<SaveProfile> result  = new ArrayList<SaveProfile>();
+
+            while (rs.next()){
+
+                result.add(new SaveProfile(rs.getString("save_id"),
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getDouble("savings_rate")));
+                //Debug
+                System.out.printf("%-25s%-25s%-25s%-25s%n",
+                        rs.getString("save_id"),
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getDouble("savings_rate")
+                );
+            }
+
+            return result;
+
+        }
+        catch(Exception e){
+            System.out.println("(saveProfileSearch) ERROR: "+ e.getMessage());
+        }
+        return null;
+    }
+
 
 
 
