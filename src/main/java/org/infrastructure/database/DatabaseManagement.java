@@ -1,5 +1,6 @@
 package org.infrastructure.database;
 
+import org.domain.IncomeSource;
 import org.domain.SaveProfile;
 import org.domain.User;
 
@@ -202,6 +203,82 @@ public class DatabaseManagement {
         }
         catch(Exception e){
             System.out.println("(saveProfileSearch) ERROR: "+ e.getMessage());
+        }
+        return null;
+    }
+
+    //Work ...
+    public static void incomeSourceInsert(
+            String income_id , String user_id, String save_id,
+            String name, Double amount , String description, Boolean isActive  ){
+
+        String sql =
+                "INSERT INTO IncomeSource(income_id, save_id, id, name, amount, description, active) VALUES (?,?,?,?,?,?,?)";
+
+        try(Connection conn =  DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1,income_id);
+            pstmt.setString(2,save_id);
+            pstmt.setString(3,user_id);
+            pstmt.setString(4,name);
+            pstmt.setDouble(5,amount);
+            pstmt.setString(6, description);
+            pstmt.setBoolean(7, isActive);
+
+            pstmt.executeUpdate();  //run the INSERT statement
+
+            System.out.println("IncomeSource was in DB insert");
+        }
+        catch (Exception e){
+            System.err.println("(incomeSourceInsert) ERROR: " + e.getMessage());
+        }
+    }
+
+    public static ArrayList<IncomeSource> incomeSourceSearch(
+            String user_id, String saveProfile_id){
+
+        String sql = "SELECT income_id, save_id, id, name, amount, description, active FROM IncomeSource WHERE id = ? AND save_id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, saveProfile_id);
+
+            try( ResultSet rs = pstmt.executeQuery()) {
+
+                ArrayList<IncomeSource> result = new ArrayList<IncomeSource>();
+
+                while (rs.next()) {
+                    result.add(new IncomeSource(
+                            rs.getString("save_id"),
+                            rs.getString("id"),
+                            rs.getString("income_id"),
+                            rs.getString("name"),
+                            rs.getDouble("amount"),
+                            rs.getString("description"),
+                            rs.getBoolean("active")
+                    ));
+                    //Debug
+                    System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s%n",
+                            rs.getString("save_id"),
+                            rs.getString("id"),
+                            rs.getString("income_id"),
+                            rs.getString("name"),
+                            rs.getDouble("amount"),
+                            rs.getString("description"),
+                            rs.getBoolean("active")
+                    );
+                }
+                return result;
+            }
+            catch (Exception e){
+                System.out.println("(incomeSourceSearch ResultSet) Error: " + e.getMessage());
+            }
+
+        }
+        catch(Exception e){
+            System.out.println("(incomeSourceSearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
         }
         return null;
     }
