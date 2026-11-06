@@ -2,6 +2,7 @@ package org.application;
 
 import org.domain.IncomeSource;
 import org.domain.SaveProfile;
+import org.domain.SavingsCategory;
 import org.domain.User;
 import org.infrastructure.database.DatabaseManagement;
 
@@ -74,6 +75,7 @@ public class UserManager {
         return DatabaseManagement.saveProfileSearch(user_id);
     }
 
+
     //IncomeSource
     public static IncomeSource incomeSourceClassCreate(String user_id, String save_id,
                                             String name, Double amount , String description, Boolean isActive){
@@ -83,7 +85,6 @@ public class UserManager {
 
 
     }
-
     public static void incomeSourceInDataBase(IncomeSource incomeSource1){
         DatabaseManagement.incomeSourceInsert(
                 incomeSource1.getIncome_id(),
@@ -94,16 +95,37 @@ public class UserManager {
                 incomeSource1.getDescription(),
                 incomeSource1.isActive());
     }
-
-    public static void incomeSourceCreate(String user_id, String save_id,
-                                          String name, Double amount , String description, Boolean isActive){
+    public static void incomeSourceCreate(String user_id, String save_id,String name, Double amount , String description, Boolean isActive){
         IncomeSource incomeSource1 = incomeSourceClassCreate(user_id,save_id,name,amount,description,isActive);
         incomeSourceInDataBase(incomeSource1);
     }
-
     public static ArrayList<IncomeSource> incomeSourcesSearch(String user_id, String save_id){
         return DatabaseManagement.incomeSourceSearch(user_id,save_id);
     }
+
+    //SavingsCategory
+    public static SavingsCategory savingsCategoryClassCreate(String save_id, String id, String name, double percent, String description) {
+        SavingsCategory savingsCategory1 = new SavingsCategory( save_id,  id,  name,  percent,  description);
+        return savingsCategory1;
+    }
+    public static void savingsCategoryInDataBase(SavingsCategory savingsCategory1){
+        DatabaseManagement.savingsCategoryInsert(
+                savingsCategory1.getCategory_id(),
+                savingsCategory1.getSave_id(),
+                savingsCategory1.getId(),
+                savingsCategory1.getName(),
+                savingsCategory1.getPercent(),
+                savingsCategory1.getDescription());
+    }
+    public static void savingsCategoryCreate(String save_id, String id,  String name, double percent, String description) {
+        SavingsCategory savingsCategory1 = savingsCategoryClassCreate(save_id, id,  name, percent/100 , description);
+        savingsCategoryInDataBase(savingsCategory1);
+    }
+    public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) {
+        return DatabaseManagement.savingsCategorySearch(user_id,save_id);
+    }
+
+
 
 
 

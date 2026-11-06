@@ -4,9 +4,9 @@ import java.util.UUID;
 
 public class SavingsCategory {
 
-    private String save_id;
-    private String  id;
     private String category_id;
+    private String save_id;
+    private String id;
     private String name;
     private double percent;
     private String description;
@@ -21,7 +21,7 @@ public class SavingsCategory {
         this.description = description;
     }
 
-    public SavingsCategory(String save_id, String id, String category_id, String name, double percent, String description) {
+    public SavingsCategory(String category_id,String save_id, String id,  String name, double percent, String description) {
         this.save_id = save_id;
         this.id = id;
         this.category_id = category_id;

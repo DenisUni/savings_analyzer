@@ -5,6 +5,7 @@ import org.infrastructure.database.DatabaseManagement;
 import org.presentation.CLI;
 
 import static org.presentation.CLI.incomeSourcePage;
+import static org.presentation.CLI.savingsCategoryPage;
 //https://martinfowler.com/bliki/PresentationDomainDataLayering.html
 
 public class Main {
@@ -22,6 +23,7 @@ public class Main {
         }
 
         incomeSourcePage(user_id,save_id);
+        savingsCategoryPage(user_id,save_id);
 
 
 

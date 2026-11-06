@@ -3,6 +3,7 @@ package org.presentation;
 import org.application.UserManager;
 import org.domain.IncomeSource;
 import org.domain.SaveProfile;
+import org.domain.SavingsCategory;
 import org.domain.User;
 import org.infrastructure.database.DatabaseManagement;
 
@@ -177,7 +178,6 @@ public class CLI {
         }
 
     }
-
     public static void incomeSourcePage(String user_id, String save_id){
         System.out.println("--- IncomeSource Page----- ");
         String answer;
@@ -212,6 +212,66 @@ public class CLI {
 
     }
 
+    //SavingsCategory
+    public static void savingsCategoryDataInput(String user_id, String save_id)
+    {
+        System.out.println("--- SavingsCategory Create ----- ");
+
+        String name;
+        double percent;
+        String description;
+
+        try{
+            System.out.println("SavingsCategory name:");
+            name = scanner.nextLine();
+            System.out.println("Percent:");
+            String percent_temp = scanner.nextLine();
+            percent = Double.parseDouble(percent_temp);
+            System.out.println("Description:");
+            description = scanner.nextLine();
+
+
+            UserManager.savingsCategoryCreate(user_id ,save_id ,name ,percent ,description );
+
+        }
+        catch (Exception e){
+            System.out.println("(SavingsCategoryDataInput) Error: "+ e.getMessage());
+        }
+    }
+
+    public static void savingsCategoryPage(String user_id, String save_id)
+    {
+        System.out.println("--- SavingsCategory Page----- ");
+        String answer;
+        try {
+            System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'SavingsCategory'? ");
+            answer = scanner.nextLine();
+
+            //User can many SavingsCategories have
+
+            if(answer.equals("c")) savingsCategoryDataInput(user_id, save_id);
+
+            else if (answer.equals("s")) {
+                ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id,save_id);
+
+                if(savingsCategoriesList.size() > 1){
+
+                    for(int i = 0; i < savingsCategoriesList.size(); i++)
+                    {
+                        System.out.println( i +" : " + savingsCategoriesList.get(i).toString());
+                    }
+
+                } else if (savingsCategoriesList.size() == 1) {
+                    System.out.println( savingsCategoriesList.get(0).toString() );
+                }
+                else System.out.println("ERROR (savingsCategoryPage) if-else or list is empty");
+            }
+
+        }
+        catch (Exception e){
+            System.out.println("(savingsCategoryPage) Error: "+ e.getMessage());
+        }
+    }
 
 
 }
