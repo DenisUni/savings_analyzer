@@ -191,12 +191,12 @@ public class DatabaseManagement {
                         rs.getString("name"),
                         rs.getDouble("savings_rate")));
                 //Debug
-                System.out.printf("%-25s%-25s%-25s%-25s%n",
+                /*System.out.printf("%-25s%-25s%-25s%-25s%n",
                         rs.getString("save_id"),
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getDouble("savings_rate")
-                );
+                );*/
             }
 
             return result;

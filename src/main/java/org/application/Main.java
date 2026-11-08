@@ -4,6 +4,8 @@ import org.infrastructure.database.DatabaseManagement;
 
 import org.presentation.CLI;
 
+import static org.application.UserManager.target_savings_calculation;
+import static org.application.UserManager.total_income_calculation;
 import static org.presentation.CLI.incomeSourcePage;
 import static org.presentation.CLI.savingsCategoryPage;
 //https://martinfowler.com/bliki/PresentationDomainDataLayering.html
@@ -11,7 +13,7 @@ import static org.presentation.CLI.savingsCategoryPage;
 public class Main {
     public static void main(String[] args) {
         String user_id;
-        String save_id = "Login again or Problem";
+        String save_id;
 
         user_id = CLI.startPage();
 
@@ -24,6 +26,13 @@ public class Main {
 
         incomeSourcePage(user_id,save_id);
         savingsCategoryPage(user_id,save_id);
+        System.out.println("Total income: " + total_income_calculation(user_id,save_id));
+
+        double target_savings = target_savings_calculation(user_id,save_id);
+        System.out.println("Target savings: " + target_savings);
+
+
+
 
 
 

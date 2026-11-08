@@ -75,6 +75,16 @@ public class UserManager {
         return DatabaseManagement.saveProfileSearch(user_id);
     }
 
+    public static SaveProfile saveProfileSearch(String user_id, String save_id){
+
+        ArrayList<SaveProfile> saveProfilesList = saveProfilesSearch(user_id);
+        for(SaveProfile saveProfile1 : saveProfilesList  ){
+            if(saveProfile1.getSave_id().equals(save_id))
+                return saveProfile1;
+        }
+        return null;
+    }
+
 
     //IncomeSource
     public static IncomeSource incomeSourceClassCreate(String user_id, String save_id,
@@ -103,6 +113,16 @@ public class UserManager {
         return DatabaseManagement.incomeSourceSearch(user_id,save_id);
     }
 
+    public static double total_income_calculation(String user_id, String save_id){
+        ArrayList<IncomeSource> incomeSourceList = incomeSourcesSearch(user_id,save_id );
+        double total_income = 0;
+        for (IncomeSource incomeSource : incomeSourceList) {
+            if(incomeSource.isActive())
+                total_income += incomeSource.getAmount();
+        }
+        return total_income;
+    }
+
     //SavingsCategory
     public static SavingsCategory savingsCategoryClassCreate(String id, String save_id, String name, double percent, String description) {
         SavingsCategory savingsCategory1 = new SavingsCategory( save_id,  id,  name,  percent,  description);
@@ -123,6 +143,19 @@ public class UserManager {
     }
     public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) {
         return DatabaseManagement.savingsCategorySearch(user_id,save_id);
+    }
+
+    public static double target_savings_calculation(String user_id, String save_id){
+        double total_income = total_income_calculation(user_id,save_id );
+        SaveProfile saveProfile1;
+        if(saveProfileSearch(user_id, save_id) == null){
+            System.out.println("(target_savings_calculation) ERROR: saveProfileSearch return null");
+            return -1;
+        }
+        saveProfile1 = saveProfileSearch(user_id, save_id);
+        double savings_rate = saveProfile1.getSaving_rate();
+
+        return  savings_rate * total_income;
     }
 
 
