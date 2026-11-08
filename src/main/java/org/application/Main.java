@@ -27,6 +27,6 @@ public class Main {
 
 
 
-        System.out.println("END! " + save_id  + " And "+ user_id);
+        System.out.println("END! Save_id: "+ save_id  + " And user_id "+ user_id);
     }
 }

@@ -104,7 +104,7 @@ public class UserManager {
     }
 
     //SavingsCategory
-    public static SavingsCategory savingsCategoryClassCreate(String save_id, String id, String name, double percent, String description) {
+    public static SavingsCategory savingsCategoryClassCreate(String id, String save_id, String name, double percent, String description) {
         SavingsCategory savingsCategory1 = new SavingsCategory( save_id,  id,  name,  percent,  description);
         return savingsCategory1;
     }
@@ -117,8 +117,8 @@ public class UserManager {
                 savingsCategory1.getPercent(),
                 savingsCategory1.getDescription());
     }
-    public static void savingsCategoryCreate(String save_id, String id,  String name, double percent, String description) {
-        SavingsCategory savingsCategory1 = savingsCategoryClassCreate(save_id, id,  name, percent/100 , description);
+    public static void savingsCategoryCreate(String id, String save_id,  String name, double percent, String description) {
+        SavingsCategory savingsCategory1 = savingsCategoryClassCreate(id, save_id,  name, percent/100 , description);
         savingsCategoryInDataBase(savingsCategory1);
     }
     public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) {
