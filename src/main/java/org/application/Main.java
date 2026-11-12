@@ -12,7 +12,7 @@ import static org.presentation.CLI.savingsCategoryPage;
 
 public class Main {
     public static void main(String[] args) {
-        String user_id;
+        /*String user_id;
         String save_id;
 
         user_id = CLI.startPage();
@@ -36,6 +36,11 @@ public class Main {
 
 
 
-        System.out.println("END! Save_id: "+ save_id  + " And user_id "+ user_id);
+        System.out.println("END! Save_id: "+ save_id  + " And user_id "+ user_id);*/
+
+        CSVManager csvManager = new CSVManager();
+        csvManager.csvReaderFunc();
     }
+
+
 }
