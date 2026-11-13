@@ -1,11 +1,11 @@
 package org.presentation;
 
+import org.application.AnalysisManager;
 import org.application.UserManager;
 import org.domain.IncomeSource;
 import org.domain.SaveProfile;
 import org.domain.SavingsCategory;
 import org.domain.User;
-import org.infrastructure.database.DatabaseManagement;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -272,6 +272,37 @@ public class CLI {
             System.out.println("(savingsCategoryPage) Error: "+ e.getMessage());
         }
     }
+
+    public static void basicAnalysis(String user_id, String save_id){
+        ArrayList<Double> list = AnalysisManager.basicCalculation();
+        double total_income = list.get(2);
+        double predefinedTotalIncome = UserManager.total_income_calculation(user_id, save_id);
+
+        int resultIncomeCheck = AnalysisManager.incomeCheck( user_id, save_id );
+
+        if(resultIncomeCheck == 1 || resultIncomeCheck == 2 ){
+            System.out.println("Please correct your predefined Incomes.");
+            System.out.println("predefined: " + predefinedTotalIncome + " and your income: %d "+ total_income);
+            //a function (page) to correct
+
+        } else if (resultIncomeCheck == -1) {
+            System.out.println("ERROR: Your income is less than zero, zero or null");
+            System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
+
+        } else if (resultIncomeCheck == 0) {
+            System.out.println("Your income remains the same as the amount you predefined!");
+            System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
+            //a function(page))to continue
+
+        }
+        else{
+            System.out.println("(basicAnalysis) ERROR");
+            //a function (page) to fix
+            return;
+        }
+
+    }
+
 
 
 }
