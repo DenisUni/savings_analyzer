@@ -12,7 +12,6 @@ public class AnalysisManager {
     // List <IncomsFormCsv>
     // List<ListOfMoneyForSavingscategory>
 
-    // [0]total_saved , [1]total_expenditure , [2]total_income
     /** return : [0]total_saved , [1]total_expenditure , [2]total_income */
     public static ArrayList<Double> basicCalculation(){
 
@@ -57,12 +56,10 @@ public class AnalysisManager {
         for(int i = 0; i < savingsCategories.size() ; i++){
             String name = savingsCategories.get(i).getName();
 
-            Double percent = savingsCategories.get(i).getPercent();
-            Double result = total_income * percent;
-
+            double percent = savingsCategories.get(i).getPercent();
+            double result = total_income * percent;
 
             DistributionListElement distributionListElement = new DistributionListElement(name,result);
-
 
             distributionListElementList.add(distributionListElement);
         }

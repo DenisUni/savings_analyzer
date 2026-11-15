@@ -9,31 +9,48 @@ import org.infrastructure.database.DatabaseManagement;
 import java.util.ArrayList;
 
 public class UserManager {
-    //User
-        //Create class User
+    //___________________________User___________________________________________________
+
+    //Create class User
     public static User userClassCreate (String name, String email){
+
+
         User user1 = new User(name, email);  //User class is success created and return true
         return user1;
     }
-        //Create object User in Database
+
+    //Create object User in Database
     public static void userSaveDatabase(User user1){
         DatabaseManagement.createTables();
         DatabaseManagement.userInsert(user1.getId(), user1.getName(), user1.getEmail()); //Object created in DB
     }
-        //Save User in DB and create class
-    public static void userSave(String name, String email){
+
+    //Save User in DB and create class
+    public static void userCreate(String name, String email){
+        name = name.toLowerCase();
+        email = email.toLowerCase();
+
         if(!DatabaseManagement.userExist(name,email)) {
-            User user1 = userClassCreate(name, email);
-            userSaveDatabase(user1);
-            return;
+            if( name != null && !name.trim().isEmpty()
+                    && email != null && !email.trim().isEmpty() ){
+                User user1 = userClassCreate(name, email);
+                userSaveDatabase(user1);
+                return;
+            }
+            else {
+                System.out.println("User was not created! Name or email is empty");
+                return;
+            }
         }
         System.out.println("User already exist !!!");
 
     }
 
     public static User userDataSearch(String name,String email) {
-        try{
+        name = name.toLowerCase();
+        email = email.toLowerCase();
 
+        try{
             ArrayList<User> usersList =  DatabaseManagement.userSearch(name,email);
 
             if(usersList.size() != 0){
@@ -54,7 +71,7 @@ public class UserManager {
         return null;
     }
 
-    //SaveProfile
+    //_____________________________SaveProfile_______________________________________________________
     public static SaveProfile saveProfileClassCreate(String user_id, String name, Double saving_rate){
         SaveProfile saveProfileUser1 = new SaveProfile(user_id,name,saving_rate);
         return saveProfileUser1;
@@ -66,8 +83,9 @@ public class UserManager {
     }
 
     public static void saveProfileCreate(String user_id, String name, Double saving_rate){
-        SaveProfile saveProfileUser1 = saveProfileClassCreate( user_id,  name,  saving_rate/100);
+        name = name.toLowerCase();
 
+        SaveProfile saveProfileUser1 = saveProfileClassCreate( user_id,  name,  saving_rate/100);
         saveProfileInDatabaseCreate(saveProfileUser1);
     }
 
@@ -85,16 +103,13 @@ public class UserManager {
         return null;
     }
 
-
-    //IncomeSource
+    //________________________________IncomeSource___________________________________________________
     public static IncomeSource incomeSourceClassCreate(String user_id, String save_id,
                                             String name, Double amount , String description, Boolean isActive){
         IncomeSource incomeSource1 = new IncomeSource(save_id, user_id, name, amount,description, isActive );
         return incomeSource1;
-
-
-
     }
+
     public static void incomeSourceInDataBase(IncomeSource incomeSource1){
         DatabaseManagement.incomeSourceInsert(
                 incomeSource1.getIncome_id(),
@@ -105,16 +120,21 @@ public class UserManager {
                 incomeSource1.getDescription(),
                 incomeSource1.isActive());
     }
+
     public static void incomeSourceCreate(String user_id, String save_id,String name, Double amount , String description, Boolean isActive){
+        name = name.toLowerCase();
+
         IncomeSource incomeSource1 = incomeSourceClassCreate(user_id,save_id,name,amount,description,isActive);
         incomeSourceInDataBase(incomeSource1);
     }
+
     public static ArrayList<IncomeSource> incomeSourcesSearch(String user_id, String save_id){
         return DatabaseManagement.incomeSourceSearch(user_id,save_id);
     }
 
     public static Integer incomeSourceUpdate(String name, Double amount,String description, Boolean active,
                                              String id, String save_id,String income_id){
+        name = name.toLowerCase();
 
         if(DatabaseManagement.incomeSourceUpdate(
                 name,  amount, description,  active,
@@ -132,11 +152,12 @@ public class UserManager {
         return total_income;
     }
 
-    //SavingsCategory
+    //__________________________________SavingsCategory__________________________________________
     public static SavingsCategory savingsCategoryClassCreate(String id, String save_id, String name, double percent, String description) {
         SavingsCategory savingsCategory1 = new SavingsCategory( save_id,  id,  name,  percent,  description);
         return savingsCategory1;
     }
+
     public static void savingsCategoryInDataBase(SavingsCategory savingsCategory1){
         DatabaseManagement.savingsCategoryInsert(
                 savingsCategory1.getCategory_id(),
@@ -146,10 +167,13 @@ public class UserManager {
                 savingsCategory1.getPercent(),
                 savingsCategory1.getDescription());
     }
+
     public static void savingsCategoryCreate(String id, String save_id,  String name, double percent, String description) {
+        name = name.toLowerCase();
         SavingsCategory savingsCategory1 = savingsCategoryClassCreate(id, save_id,  name, percent/100 , description);
         savingsCategoryInDataBase(savingsCategory1);
     }
+
     public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) {
         return DatabaseManagement.savingsCategorySearch(user_id,save_id);
     }

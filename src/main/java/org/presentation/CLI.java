@@ -15,9 +15,9 @@ import static org.application.UserManager.saveProfilesSearch;
 public class CLI {
 
     private static final Scanner scanner = new Scanner(System.in);
-    //User
-    public static void userDataInput(){
 
+    //___________________User______________________________________
+    public static void userDataInput(){
         System.out.println("--- User Create ----- ");
 
         String name;
@@ -28,17 +28,17 @@ public class CLI {
             name = scanner.nextLine();
             System.out.println("Your email:");
             email = scanner.nextLine();
-            UserManager.userSave(name,email);
+            UserManager.userCreate(name,email);
 
         }
         catch (Exception e){
             System.out.println("Error: "+ e.getMessage());
         }
-
     }
 
     public static String userLogin() {
         System.out.println("--- Login Page ----- ");
+
         try{
             System.out.println("Your name:");
             String name = scanner.nextLine();
@@ -51,7 +51,8 @@ public class CLI {
                 System.out.println(user1.toString());
                 return user1.getId();
                 }
-                else System.out.println("Not Find");
+
+            else System.out.println("Not Find");
 
         } catch (Exception e) {
             System.out.println("ERROR: "+ e.getMessage() );
@@ -62,6 +63,7 @@ public class CLI {
     public static String startPage(){
         System.out.println("--- Start Page ----- ");
         String answer;
+
         try {
             System.out.println("Do you want registration (r) or login (l) ? ");
             answer = scanner.nextLine();
@@ -79,9 +81,8 @@ public class CLI {
         return null;
     }
 
-    //SaveProfile
+    //___________________SaveProfile______________________________________________
     public static void profileDataInput(String user_id){
-
         System.out.println("--- Profile Create ----- ");
 
         String save_profile_name;
@@ -106,12 +107,12 @@ public class CLI {
     public static String profilePage(String user_id){
         System.out.println("--- Profile Page ----- ");
         String answer;
+
         try {
             System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
             answer = scanner.nextLine();
 
             //User can many Profiles have
-
             if(answer.equals("r")) profileDataInput(user_id);
 
             else if (answer.equals("l")) {
@@ -132,7 +133,6 @@ public class CLI {
                 System.out.println("(profilePage) ERROR ");
 
             }
-
         }
         catch (Exception e){
             System.out.println("Error: "+ e.getMessage());
@@ -140,9 +140,7 @@ public class CLI {
         return null;
     }
 
-
-
-    //IncomeSource
+    //___________________IncomeSource______________________________________________
     public static IncomeSourceInputElement incomeSourceInput(){
         String name;
         double amount;
@@ -205,8 +203,8 @@ public class CLI {
             System.out.println( incomeSourcesList.get(0).toString() );
         }
         else System.out.println("ERROR (incomeSourcePage) if-else or list is empty");
-
     }
+
     public static void incomeSourcePage(String user_id, String save_id){
         System.out.println("--- IncomeSource Page----- ");
         String answer;
@@ -215,7 +213,6 @@ public class CLI {
             answer = scanner.nextLine();
 
             //User can many incomeSources have
-
             if(answer.equals("c")) incomeSourceCreate(user_id, save_id);
 
             else if (answer.equals("s")) {
@@ -243,15 +240,13 @@ public class CLI {
                         name, amount,description, isActive,user_id,save_id,incomeSourceToUpdate.getIncome_id());
                 System.out.println("Updated !");
             }
-
         }
         catch (Exception e){
             System.out.println("(incomeSourcePage) Error: "+ e.getMessage());
         }
-
     }
 
-    //SavingsCategory
+    //___________________SavingsCategory______________________________________________________________
     public static void savingsCategoryDataInput(String user_id, String save_id)
     {
         System.out.println("--- SavingsCategory Create ----- ");
@@ -269,9 +264,7 @@ public class CLI {
             System.out.println("Description:");
             description = scanner.nextLine();
 
-
             UserManager.savingsCategoryCreate(user_id ,save_id ,name ,percent ,description );
-
         }
         catch (Exception e){
             System.out.println("(SavingsCategoryDataInput) Error: "+ e.getMessage());
@@ -282,12 +275,12 @@ public class CLI {
     {
         System.out.println("--- SavingsCategory Page----- ");
         String answer;
+
         try {
             System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'SavingsCategory'? ");
             answer = scanner.nextLine();
 
             //User can many SavingsCategories have
-
             if(answer.equals("c")) savingsCategoryDataInput(user_id, save_id);
 
             else if (answer.equals("s")) {
@@ -312,6 +305,7 @@ public class CLI {
         }
     }
 
+    //___________________Analysis_______________________________________
     public static void basicAnalysis(String user_id, String save_id){
         ArrayList<Double> list = AnalysisManager.basicCalculation();
         double total_income = list.get(2);
@@ -346,9 +340,5 @@ public class CLI {
             //a function (page) to fix
             return;
         }
-
     }
-
-
-
 }
