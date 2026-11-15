@@ -260,7 +260,7 @@ public class DatabaseManagement {
                             rs.getBoolean("active")
                     ));
                     //Debug
-                    System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s%n",
+                    /*System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s%n",
                             rs.getString("save_id"),
                             rs.getString("id"),
                             rs.getString("income_id"),
@@ -268,7 +268,7 @@ public class DatabaseManagement {
                             rs.getDouble("amount"),
                             rs.getString("description"),
                             rs.getBoolean("active")
-                    );
+                    );*/
                 }
                 return result;
             }
@@ -281,6 +281,36 @@ public class DatabaseManagement {
             System.out.println("(incomeSourceSearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
         }
         return null;
+    }
+
+    public static Integer incomeSourceUpdate(
+            String name, Double amount,String description, Boolean active,
+            String id, String save_id,String income_id){
+
+        String sql =
+                "UPDATE IncomeSource SET name = ? , " +
+                        "amount = ? , " +
+                        "description = ? ," +
+                        "active = ?  " +
+                        "WHERE id = ? AND save_id = ? AND income_id =? ";
+
+        try(Connection conn =  DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1,name);
+            pstmt.setDouble(2,amount);
+            pstmt.setString(3,description);
+            pstmt.setBoolean(4,active);
+            pstmt.setString(5,id);
+            pstmt.setString(6,save_id);
+            pstmt.setString(7,income_id);
+
+            pstmt.executeUpdate();
+            return 0;
+        }catch (Exception e) {
+            System.err.println(e.getMessage());
+            return -1;
+        }
     }
 
     //Work ...

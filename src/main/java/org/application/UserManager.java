@@ -113,6 +113,15 @@ public class UserManager {
         return DatabaseManagement.incomeSourceSearch(user_id,save_id);
     }
 
+    public static Integer incomeSourceUpdate(String name, Double amount,String description, Boolean active,
+                                             String id, String save_id,String income_id){
+
+        if(DatabaseManagement.incomeSourceUpdate(
+                name,  amount, description,  active,
+                 id,  save_id, income_id ) == 0) return 0;
+        else return -1;
+    }
+
     public static double total_income_calculation(String user_id, String save_id){
         ArrayList<IncomeSource> incomeSourceList = incomeSourcesSearch(user_id,save_id );
         double total_income = 0;

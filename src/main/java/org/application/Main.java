@@ -16,12 +16,12 @@ public class Main {
             System.out.println("END! " + save_id  + " And "+ user_id);
             return;
         }
-/*
+
         CLI.incomeSourcePage(user_id,save_id);
         CLI.savingsCategoryPage(user_id,save_id);
-        System.out.println("Total income: " + total_income_calculation(user_id,save_id);
 
-        */
+        //System.out.println("Total income: " + total_income_calculation(user_id,save_id);
+
 
         CLI.basicAnalysis(user_id, save_id);
 

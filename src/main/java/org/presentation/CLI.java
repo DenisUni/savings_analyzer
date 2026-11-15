@@ -2,10 +2,7 @@ package org.presentation;
 
 import org.application.AnalysisManager;
 import org.application.UserManager;
-import org.domain.IncomeSource;
-import org.domain.SaveProfile;
-import org.domain.SavingsCategory;
-import org.domain.User;
+import org.domain.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -143,16 +140,15 @@ public class CLI {
         return null;
     }
 
-    //IncomeSource
-    public static void incomeSourceDataInput(String user_id, String save_id){
-        System.out.println("--- IncomeSource Create ----- ");
 
+
+    //IncomeSource
+    public static IncomeSourceInputElement incomeSourceInput(){
         String name;
         double amount;
         String description;
         boolean isActive;
-
-        try{
+        try {
             System.out.println("IncomeSource name:");
             name = scanner.nextLine();
             System.out.println("Amount:");
@@ -163,46 +159,89 @@ public class CLI {
             System.out.println("Is Active (y) or Not Active (n) now :");
 
             String isActive_tmp = scanner.nextLine();
-            if(isActive_tmp.equals("y")) isActive = true;
+            if (isActive_tmp.equals("y")) isActive = true;
             else if (isActive_tmp.equals("n")) isActive = false;
-            else{
+            else {
                 System.out.println("Not correct input");
-                return;
-            }
 
-            UserManager.incomeSourceCreate(user_id ,save_id ,name ,amount ,description ,isActive);
+                return null;
+            }
+            return new IncomeSourceInputElement(name,amount,description,isActive);
 
         }
         catch (Exception e){
-            System.out.println("(incomeSourceDataInput) Error: "+ e.getMessage());
+            System.err.println(e.getMessage());
         }
+        return null;
+
+    }
+
+    public static void incomeSourceCreate(String user_id, String save_id){
+        System.out.println("--- IncomeSource Create ----- ");
+
+        IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
+
+        String name = incomeSourceInputElement.getName();
+        Double amount = incomeSourceInputElement.getAmount();
+        String description = incomeSourceInputElement.getDescription();
+        Boolean isActive = incomeSourceInputElement.isActive();
+
+        UserManager.incomeSourceCreate(user_id ,save_id ,name ,amount ,description ,isActive);
+
+        System.out.println("(incomeSourceCreate) created! ");
+    }
+
+    public static void incomeSourcesShow(String user_id, String save_id){
+        ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id,save_id);
+
+        if(incomeSourcesList.size() > 1){
+
+            for(int i = 0; i < incomeSourcesList.size(); i++)
+            {
+                System.out.println( i +" : " + incomeSourcesList.get(i).toString());
+            }
+
+        } else if (incomeSourcesList.size() == 1) {
+            System.out.println( incomeSourcesList.get(0).toString() );
+        }
+        else System.out.println("ERROR (incomeSourcePage) if-else or list is empty");
 
     }
     public static void incomeSourcePage(String user_id, String save_id){
         System.out.println("--- IncomeSource Page----- ");
         String answer;
         try {
-            System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'IncomeSource'? ");
+            System.out.println("Do you want create (c), show (s), Update (u) ( come soon! ) or delete ( come soon! ) (d) your 'IncomeSource'? ");
             answer = scanner.nextLine();
 
-            //User can many Profiles have
+            //User can many incomeSources have
 
-            if(answer.equals("c")) incomeSourceDataInput(user_id, save_id);
+            if(answer.equals("c")) incomeSourceCreate(user_id, save_id);
 
             else if (answer.equals("s")) {
+                incomeSourcesShow(user_id, save_id);
+            }
+            else if (answer.equals("u")) {
                 ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id,save_id);
 
-                if(incomeSourcesList.size() > 1){
+                incomeSourcesShow(user_id, save_id);
 
-                    for(int i = 0; i < incomeSourcesList.size(); i++)
-                    {
-                        System.out.println( i +" : " + incomeSourcesList.get(i).toString());
-                    }
+                System.out.println("Which source should be updated (0 or 1 or ...)?");
+                answer = scanner.nextLine();
+                //Input Validation!
+                int answer_int = Integer.parseInt(answer);
 
-                } else if (incomeSourcesList.size() == 1) {
-                    System.out.println( incomeSourcesList.get(0).toString() );
-                }
-                else System.out.println("ERROR (incomeSourcePage) if-else or list is empty");
+                IncomeSource incomeSourceToUpdate = incomeSourcesList.get(answer_int);
+                IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
+
+                String name = incomeSourceInputElement.getName();
+                Double amount = incomeSourceInputElement.getAmount();
+                String description = incomeSourceInputElement.getDescription();
+                Boolean isActive = incomeSourceInputElement.isActive();
+
+                UserManager.incomeSourceUpdate(
+                        name, amount,description, isActive,user_id,save_id,incomeSourceToUpdate.getIncome_id());
+                System.out.println("Updated !");
             }
 
         }
@@ -282,7 +321,7 @@ public class CLI {
 
         if(resultIncomeCheck == 1 || resultIncomeCheck == 2 ){
             System.out.println("Please correct your predefined Incomes.");
-            System.out.println("predefined: " + predefinedTotalIncome + " and your income: %d "+ total_income);
+            System.out.println("predefined: " + predefinedTotalIncome + " and your income: "+ total_income);
             //a function (page) to correct
 
         } else if (resultIncomeCheck == -1) {
@@ -292,7 +331,12 @@ public class CLI {
         } else if (resultIncomeCheck == 0) {
             System.out.println("Your income remains the same as the amount you predefined!");
             System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
-            //a function(page))to continue
+
+            ArrayList<DistributionListElement> distributionListElementList = AnalysisManager.distributionOfSavings(user_id,save_id);
+
+            for (int i = 0; i < distributionListElementList.size(); i++) {
+                distributionListElementList.get(i).toString();
+            }
 
         }
         else{

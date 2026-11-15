@@ -1,5 +1,6 @@
 package org.application;
 
+import org.domain.DistributionListElement;
 import org.domain.SavingsCategory;
 import org.infrastructure.csv.CSVManagement;
 
@@ -46,14 +47,17 @@ public class AnalysisManager {
 
     }
 
-    public static void distributionOfSavings(String user_id, String save_id){
+    public static ArrayList<DistributionListElement> distributionOfSavings(String user_id, String save_id){
         ArrayList<Double> list = basicCalculation();
         double total_income = list.get(2);
-
         ArrayList<SavingsCategory> savingsCategories =  UserManager.savingsCategorySearch(user_id, save_id);
-
-        //Work
-
+        ArrayList<DistributionListElement> distributionListElementList = new ArrayList<>();
+        for(int i = 0; i < savingsCategories.size() ; i++){
+            String name = savingsCategories.get(i).getName();
+            Double percent = savingsCategories.get(i).getPercent();
+            distributionListElementList.add(new DistributionListElement(name,total_income * percent));
+        }
+        return distributionListElementList;
 
     }
 }
