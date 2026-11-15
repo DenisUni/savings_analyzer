@@ -50,12 +50,21 @@ public class AnalysisManager {
     public static ArrayList<DistributionListElement> distributionOfSavings(String user_id, String save_id){
         ArrayList<Double> list = basicCalculation();
         double total_income = list.get(2);
+
         ArrayList<SavingsCategory> savingsCategories =  UserManager.savingsCategorySearch(user_id, save_id);
-        ArrayList<DistributionListElement> distributionListElementList = new ArrayList<>();
+        ArrayList<DistributionListElement> distributionListElementList = new ArrayList<DistributionListElement>();
+
         for(int i = 0; i < savingsCategories.size() ; i++){
             String name = savingsCategories.get(i).getName();
+
             Double percent = savingsCategories.get(i).getPercent();
-            distributionListElementList.add(new DistributionListElement(name,total_income * percent));
+            Double result = total_income * percent;
+
+
+            DistributionListElement distributionListElement = new DistributionListElement(name,result);
+
+
+            distributionListElementList.add(distributionListElement);
         }
         return distributionListElementList;
 

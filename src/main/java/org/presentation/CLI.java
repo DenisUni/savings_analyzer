@@ -324,18 +324,20 @@ public class CLI {
             System.out.println("predefined: " + predefinedTotalIncome + " and your income: "+ total_income);
             //a function (page) to correct
 
-        } else if (resultIncomeCheck == -1) {
+        }
+        else if (resultIncomeCheck == -1) {
             System.out.println("ERROR: Your income is less than zero, zero or null");
             System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
 
-        } else if (resultIncomeCheck == 0) {
+        }
+        else if (resultIncomeCheck == 0) {
             System.out.println("Your income remains the same as the amount you predefined!");
             System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
 
             ArrayList<DistributionListElement> distributionListElementList = AnalysisManager.distributionOfSavings(user_id,save_id);
 
             for (int i = 0; i < distributionListElementList.size(); i++) {
-                distributionListElementList.get(i).toString();
+                System.out.println(distributionListElementList.get(i).toString());
             }
 
         }

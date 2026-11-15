@@ -10,6 +10,14 @@ public class DistributionListElement {
         this.percent = percent;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Double getPercent() {
+        return percent;
+    }
+
     @Override
     public String toString() {
         return "DistributionListElement{" +
