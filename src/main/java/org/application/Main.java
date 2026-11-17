@@ -1,6 +1,6 @@
 package org.application;
 
-import org.presentation.CLI;
+import org.presentation.cli.CLI;
 //https://martinfowler.com/bliki/PresentationDomainDataLayering.html
 
 public class Main {

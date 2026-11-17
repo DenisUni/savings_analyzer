@@ -1,4 +1,4 @@
-package org.presentation;
+package org.presentation.cli;
 
 import org.application.AnalysisManager;
 import org.application.UserManager;
@@ -6,7 +6,6 @@ import org.domain.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.Scanner;
 
 import static org.application.UserManager.incomeSourcesSearch;
