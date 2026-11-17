@@ -1,4 +1,4 @@
-package org.presentation.cli;
+package org.presentation;
 
 import org.application.AnalysisManager;
 import org.application.UserManager;
