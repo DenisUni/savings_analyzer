@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="eu">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>mySite/saving-profile-reg</title>
+        
+    </head>
+
+    <body>
+        <h1>Saving Analysis</h1>
+        <h2>Create saving profile</h2>
+
+        <form action="main-page" method="get">
+            <fieldset>
+                <legend>Create saving profile</legend>
+                <table role="presentation">
+
+                    <tr>
+                        <td><label for="profilename">Profilename:</label></td>
+                        <td><input id="profilename" name="profilename" type="text"
+                            minlength = "3" maxlength="10" size="25"
+                            autocomplete required autofocus></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="profile_precent">Precent:</label></td>
+                        <td><input id="profile_precent" name="profile_precent" type="number"
+                            minlength="0" maxlength="100" size="30"
+                            required></td>
+                    </tr>
+
+                </table>
+
+
+            </fieldset>
+            <button type="summit">Create</button>
+
+        </form>
+
+
+    </body>
+
+
+
+
+</html>
