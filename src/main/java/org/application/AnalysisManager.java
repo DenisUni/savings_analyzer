@@ -1,9 +1,11 @@
 package org.application;
 
+import de.siegmar.fastcsv.reader.CsvParseException;
 import org.domain.DistributionListElement;
 import org.domain.SavingsCategory;
 import org.infrastructure.csv.CSVManagement;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class AnalysisManager {
@@ -13,7 +15,7 @@ public class AnalysisManager {
     // List<ListOfMoneyForSavingscategory>
 
     /** return : [0]total_saved , [1]total_expenditure , [2]total_income */
-    public static ArrayList<Double> basicCalculation(){
+    public static ArrayList<Double> basicCalculation() throws CsvParseException, IOException {
 
         CSVManagement csvManagement = new CSVManagement();
 
