@@ -8,68 +8,64 @@ import org.infrastructure.database.DatabaseManagement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.NoSuchElementException;
 
 public class UserManager {
     //___________________________User___________________________________________________
 
     //Create class User
     public static User userClassCreate (String name, String email){
-
-
-        User user1 = new User(name, email);  //User class is success created and return true
-        return user1;
+        return new User(name, email);  //User class is success created and return true
     }
 
     //Create object User in Database
-    public static void userSaveDatabase(User user1) {
+    public static void userSaveDatabase(User user1) throws SQLException{
         DatabaseManagement.createTables();
         DatabaseManagement.userInsert(user1.getId(), user1.getName(), user1.getEmail()); //Object created in DB
     }
 
     //Save User in DB and create class
-    public static void userCreate(String name, String email){
-        name = name.toLowerCase();
-        email = email.toLowerCase();
+    public static void userCreate(String name, String email) throws SQLException{
 
-        if(!DatabaseManagement.userExist(name,email)) {
-            if( name != null && !name.trim().isEmpty()
-                    && email != null && !email.trim().isEmpty() ){
-                User user1 = userClassCreate(name, email);
-                userSaveDatabase(user1);
-                return;
-            }
-            else {
-                System.out.println("User was not created! Name or email is empty");
-                return;
-            }
-        }
-        System.out.println("User already exist !!!");
+        if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty())
+            throw new IllegalArgumentException("User was not created! Name or email is empty");
+
+        name = name.trim().toLowerCase();
+        email = email.trim().toLowerCase();
+
+
+        if (DatabaseManagement.userExist(name, email))
+            throw new IllegalArgumentException("User already exist");
+
+        User user = userClassCreate(name, email);
+
+        userSaveDatabase(user);
 
     }
 
-    public static User userDataSearch(String name,String email) {
-        name = name.toLowerCase();
-        email = email.toLowerCase();
+    public static User userDataSearch(String name,String email) throws SQLException {
+        if(name == null || email == null)
+            throw new IllegalArgumentException("Name or email cannot be null");
 
-        try{
-            ArrayList<User> usersList =  DatabaseManagement.userSearch(name,email);
+        name = name.trim().toLowerCase();
+        email = email.trim().toLowerCase();
 
-            if(usersList.size() != 0){
-                if(usersList.size() > 1){
-                    System.out.println("ERROR: Duplicate exist");
-                    return null;
-                }
-                String user_id = usersList.get(0).getId();
-                String user_name = usersList.get(0).getName();
-                String user_email = usersList.get(0).getEmail();
 
-                User user1 = new User(user_id,user_name,user_email);
-                return user1;
-            }
-        } catch (Exception e) {
-            System.out.println("ERROR: "+ e.getMessage() );
+        ArrayList<User> usersList =  DatabaseManagement.userSearch(name,email);
+
+        if(usersList.isEmpty() ) {
+            throw new NoSuchElementException("User not found!");
         }
-        return null;
+        if(usersList.size() > 1){
+            throw new IllegalStateException("Duplicate users found!");
+        }
+        String user_id = usersList.get(0).getId();
+        String user_name = usersList.get(0).getName();
+        String user_email = usersList.get(0).getEmail();
+
+        return new User(user_id,user_name,user_email);
+
     }
 
     //_____________________________SaveProfile_______________________________________________________
