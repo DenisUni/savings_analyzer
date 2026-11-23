@@ -74,16 +74,16 @@ public class CLI {
         try {
             //System.out.println("Do you want registration (r) or login (l) ? ");
 
-            menuItem("1", "Create a new account");
-            menuItem("2", "Login");
-            menuItem("0", "Exit (coming soon)");
+            menuItem("0", "Create a new account");
+            menuItem("1", "Login");
+            menuItem("2", "Exit (coming soon)");
             separator();
 
             answer = scanner.nextLine();
 
 
-            if (Objects.equals(answer, "1")) userDataInput();
-            else if (Objects.equals(answer, "2")) {
+            if (Objects.equals(answer, "0")) userDataInput();
+            else if (Objects.equals(answer, "1")) {
                 String user_id = userLogin();
                 return user_id;
             }
@@ -124,17 +124,17 @@ public class CLI {
 
         try {
             //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
-            menuItem("1", "Create a new profile");
-            menuItem("2", "Select a exist profile");
-            menuItem("0", "Exit (coming soon)");
+            menuItem("0", "Create a new profile");
+            menuItem("1", "Select a exist profile");
+            menuItem("2", "Exit (coming soon)");
             separator();
 
             answer = scanner.nextLine();
 
             //User can many Profiles have
-            if (answer.equals("1")) profileDataInput(user_id);
+            if (answer.equals("0")) profileDataInput(user_id);
 
-            else if (answer.equals("2")) {
+            else if (answer.equals("1   ")) {
                 ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
 
                 if (profilesList.size() > 1) {
@@ -223,10 +223,10 @@ public class CLI {
 
         } else if (incomeSourcesList.size() == 1) {
             System.out.println(incomeSourcesList.get(0).toString());
-            menuItem("0" ,   incomeSourcesList.get(0).getName()+ " "
-                    +incomeSourcesList.get(0).getAmount() + "Euro  "
-                    + incomeSourcesList.get(0).getDescription()+" "
-                    + incomeSourcesList.get(0).isActive() + " ");
+            menuItem("0" ,   " Name: " + incomeSourcesList.get(0).getName()+
+                    "Amount: " +incomeSourcesList.get(0).getAmount() + "Euro " +
+                    "Description: " + incomeSourcesList.get(0).getDescription()+" " +
+                    "isActive: " + incomeSourcesList.get(0).isActive() + " ");
 
         } else error("ERROR (incomeSourcePage) if-else or list is empty");
     }
@@ -272,7 +272,7 @@ public class CLI {
                 success("Updated !");
             }
         } catch (Exception e) {
-            System.out.println("(incomeSourcePage) Error: " + e.getMessage());
+            System.out.println("(incomeSourcePage) Error: " + e.getMessage());  //Logger
         }
     }
 
@@ -287,8 +287,10 @@ public class CLI {
         try {
             System.out.println("SavingsCategory name:");
             name = scanner.nextLine();
+            separator();
             System.out.println("Percent:");
             String percent_temp = scanner.nextLine();
+            separator();
             percent = Double.parseDouble(percent_temp);
             System.out.println("Description:");
             description = scanner.nextLine();
@@ -304,24 +306,33 @@ public class CLI {
         String answer;
 
         try {
-            System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'SavingsCategory'? ");
+            //System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'SavingsCategory'? ");
+            menuItem("0", "create");
+            menuItem("1", "show");
+            menuItem("2", "update ( come soon! )");
+            menuItem("3", "delete ( come soon! )");
+
             answer = scanner.nextLine();
 
             //User can many SavingsCategories have
-            if (answer.equals("c")) savingsCategoryDataInput(user_id, save_id);
+            if (answer.equals("0")) savingsCategoryDataInput(user_id, save_id);
 
-            else if (answer.equals("s")) {
+            else if (answer.equals("1")) {
                 ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id, save_id);
 
                 if (savingsCategoriesList.size() > 1) {
 
                     for (int i = 0; i < savingsCategoriesList.size(); i++) {
-                        System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
+                        //System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
+                        menuItem("" + i + "" ,
+                                " Name: " + savingsCategoriesList.get(i).getName() +
+                                " Present: " + savingsCategoriesList.get(i).getPercent() + " %" +
+                                " Description: " + savingsCategoriesList.get(i).getDescription() + "." );
                     }
 
                 } else if (savingsCategoriesList.size() == 1) {
                     System.out.println(savingsCategoriesList.get(0).toString());
-                } else System.out.println("ERROR (savingsCategoryPage) if-else or list is empty");
+                } else error("ERROR (savingsCategoryPage) if-else or list is empty");
             }
 
         } catch (Exception e) {

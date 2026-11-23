@@ -18,7 +18,7 @@ public class DatabaseManagement {
     private static final String URL =
             "jdbc:sqlite:src/main/java/org/infrastructure/database/database.db";
 
-    public static void createTables(){
+    public static void createTables()throws SQLException{
 
         String sqlUser = "CREATE TABLE IF NOT EXISTS User(" +
                 " id varchar primary key," +
@@ -63,14 +63,14 @@ public class DatabaseManagement {
                 stmt.execute(SavingsCategory);
                 stmt.execute(IncomeSource);
 
-                System.out.println("Tables successfully created.");
+                //System.out.println("Tables successfully created."); //Logger
 
-            } catch (SQLException e) {
+            } /*catch (SQLException e) {
                 System.out.println("(createTables) ERROR :" + e.getMessage());
-            }
+            }*/
         }
 
-    public static void userInsert(String id, String name, String email){
+    public static void userInsert(String id, String name, String email) throws SQLException {
 
         String sql = "INSERT INTO User(id, name, email) VALUES (?,?,?)";
 
@@ -83,13 +83,13 @@ public class DatabaseManagement {
 
             System.out.println("User was in DB insert");
         }
-        catch (Exception e){
+        /*catch (Exception e){
             System.err.println(e.getMessage());
-        }
+        }*/
 
     }
 
-    public static ArrayList<User>  userSearch(String name, String email){
+    public static ArrayList<User>  userSearch(String name, String email) throws SQLException{
         String sql = "SELECT id,name,email FROM User WHERE name = ? AND email = ?";
 
         try(Connection conn = DriverManager.getConnection(URL);
@@ -118,13 +118,12 @@ public class DatabaseManagement {
             return result;
 
         }
-        catch(Exception e){
+        /*catch(Exception e){
                 System.out.println(e.getMessage());
-        }
-        return null;
+        }*/
     }
 
-    public static Boolean  userExist(String name,String email){
+    public static Boolean  userExist(String name,String email) throws SQLException{
 
         String sql = "SELECT id,name,email FROM User WHERE name = ? AND email = ? ";
 
@@ -148,13 +147,13 @@ public class DatabaseManagement {
             }
             if(names.contains(name) && emails.contains(email)) return true;
         }
-        catch(Exception e){
+        /*catch(Exception e){
             System.out.println(e.getMessage());
-        }
+        }*/
         return false;
     }
 
-    public static void saveProfileInsert(String user_id,String save_id, String name, Double saving_rate ){
+    public static void saveProfileInsert(String user_id,String save_id, String name, Double saving_rate )throws SQLException{
 
         String sql = "INSERT INTO SaveProfile(save_id, id, name, savings_rate) VALUES (?,?,?,?)";
 
@@ -168,17 +167,18 @@ public class DatabaseManagement {
 
             System.out.println("SaveProfile was in DB insert");
         }
-        catch (Exception e){
+        /*catch (Exception e){
             System.err.println(e.getMessage());
-        }
+        }*/
     }
 
-    public static ArrayList<SaveProfile> saveProfileSearch(String user_id){
+    public static ArrayList<SaveProfile> saveProfileSearch(String user_id) throws SQLException{
+
         String sql = "SELECT save_id, id, name, savings_rate FROM SaveProfile WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL);
-
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, user_id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -202,15 +202,14 @@ public class DatabaseManagement {
             return result;
 
         }
-        catch(Exception e){
+        /*catch(Exception e){
             System.out.println("(saveProfileSearch) ERROR: "+ e.getMessage());
-        }
-        return null;
+        }*/
     }
 
     public static void incomeSourceInsert(
             String income_id , String user_id, String save_id,
-            String name, Double amount , String description, Boolean isActive  ){
+            String name, Double amount , String description, Boolean isActive  ) throws SQLException{
 
         String sql =
                 "INSERT INTO IncomeSource(income_id, save_id, id, name, amount, description, active) VALUES (?,?,?,?,?,?,?)";
@@ -227,21 +226,21 @@ public class DatabaseManagement {
 
             pstmt.executeUpdate();  //run the INSERT statement
 
-            System.out.println("IncomeSource was in DB insert");
+            //System.out.println("IncomeSource was in DB insert"); //Logger
         }
-        catch (Exception e){
+        /*catch (Exception e){
             System.err.println("(incomeSourceInsert) ERROR: " + e.getMessage());
-        }
+        }*/
     }
 
     public static ArrayList<IncomeSource> incomeSourceSearch(
-            String user_id, String saveProfile_id){
+            String user_id, String saveProfile_id) throws SQLException{
 
         String sql = "SELECT income_id, save_id, id, name, amount, description, active FROM IncomeSource WHERE id = ? AND save_id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL);
-
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, user_id);
             pstmt.setString(2, saveProfile_id);
 
@@ -259,7 +258,7 @@ public class DatabaseManagement {
                             rs.getString("description"),
                             rs.getBoolean("active")
                     ));
-                    //Debug
+                    //Logger
                     /*System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s%n",
                             rs.getString("save_id"),
                             rs.getString("id"),
@@ -272,20 +271,19 @@ public class DatabaseManagement {
                 }
                 return result;
             }
-            catch (Exception e){
+            /*catch (Exception e){
                 System.out.println("(incomeSourceSearch ResultSet) Error: " + e.getMessage());
-            }
+            }*/
 
         }
-        catch(Exception e){
+        /*catch(Exception e){
             System.out.println("(incomeSourceSearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
-        }
-        return null;
+        }*/
     }
 
     public static Integer incomeSourceUpdate(
             String name, Double amount,String description, Boolean active,
-            String id, String save_id,String income_id){
+            String id, String save_id,String income_id) throws SQLException{
 
         String sql =
                 "UPDATE IncomeSource SET name = ? , " +
@@ -307,15 +305,16 @@ public class DatabaseManagement {
 
             pstmt.executeUpdate();
             return 0;
-        }catch (Exception e) {
+
+        }/*catch (Exception e) {
             System.err.println(e.getMessage());
             return -1;
-        }
+        }*/
     }
 
     //Work ...
     public static void savingsCategoryInsert(
-            String category_id,String save_id, String user_id,  String name, double percent, String description)
+            String category_id,String save_id, String user_id,  String name, double percent, String description) throws SQLException
     {
         String sql =
                 "INSERT INTO SavingsCategory(category_id, save_id, id, name, percent, description) VALUES (?,?,?,?,?,?)";
@@ -336,13 +335,13 @@ public class DatabaseManagement {
 
         }
 
-        catch (Exception e){
+        /*catch (Exception e){
             System.out.println("(SavingsCategoryInsert) ERROR: "  + e.getMessage());
-        }
+        }*/
     }
 
     public static ArrayList<SavingsCategory> savingsCategorySearch(
-            String user_id , String saveProfile_id)
+            String user_id , String saveProfile_id) throws SQLException
     {
         String sql = "SELECT category_id, save_id, id, name, percent, description FROM SavingsCategory WHERE id = ? AND save_id = ?";
 
@@ -377,19 +376,14 @@ public class DatabaseManagement {
                 }
                 return result;
             }
-            catch (Exception e){
+            /*catch (Exception e){
                 System.out.println("(SavingsCategorySearch ResultSet) Error: " + e.getMessage());
-            }
+            }*/
 
         }
-        catch(Exception e){
+        /*catch(Exception e){
             System.out.println("(SavingsCategorySearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
         }
-        return null;
+        return null;*/
     }
-
-
-
-
-
 }

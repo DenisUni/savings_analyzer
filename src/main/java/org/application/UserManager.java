@@ -6,6 +6,7 @@ import org.domain.SavingsCategory;
 import org.domain.User;
 import org.infrastructure.database.DatabaseManagement;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserManager {
@@ -20,7 +21,7 @@ public class UserManager {
     }
 
     //Create object User in Database
-    public static void userSaveDatabase(User user1){
+    public static void userSaveDatabase(User user1) {
         DatabaseManagement.createTables();
         DatabaseManagement.userInsert(user1.getId(), user1.getName(), user1.getEmail()); //Object created in DB
     }
@@ -189,6 +190,10 @@ public class UserManager {
         double savings_rate = saveProfile1.getSaving_rate();
 
         return  savings_rate * total_income;
+    }
+
+    public static double abc (double a,double b){
+        return a - b;
     }
 
 
