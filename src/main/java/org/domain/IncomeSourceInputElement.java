@@ -1,5 +1,7 @@
 package org.domain;
 
+import java.math.BigDecimal;
+
 public class IncomeSourceInputElement {
     private String name;
     private double amount;

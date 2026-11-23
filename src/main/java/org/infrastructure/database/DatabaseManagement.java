@@ -5,6 +5,7 @@ import org.domain.SaveProfile;
 import org.domain.SavingsCategory;
 import org.domain.User;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.sql.DriverManager;
@@ -209,7 +210,7 @@ public class DatabaseManagement {
 
     public static void incomeSourceInsert(
             String income_id , String user_id, String save_id,
-            String name, Double amount , String description, Boolean isActive  ) throws SQLException{
+            String name, double amount , String description, Boolean isActive  ) throws SQLException{
 
         String sql =
                 "INSERT INTO IncomeSource(income_id, save_id, id, name, amount, description, active) VALUES (?,?,?,?,?,?,?)";
@@ -282,7 +283,7 @@ public class DatabaseManagement {
     }
 
     public static Integer incomeSourceUpdate(
-            String name, Double amount,String description, Boolean active,
+            String name, double amount,String description, Boolean active,
             String id, String save_id,String income_id) throws SQLException{
 
         String sql =

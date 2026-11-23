@@ -6,7 +6,7 @@ public class SaveProfile {
     private String user_id;
     private String save_id;
     private String name;
-    private Double saving_rate;
+    private double saving_rate;
 
     public SaveProfile(String user_id, String name, Double saving_rate){
         this.save_id = UUID.randomUUID().toString();

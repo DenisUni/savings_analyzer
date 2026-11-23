@@ -6,6 +6,7 @@ import org.domain.SavingsCategory;
 import org.domain.User;
 import org.infrastructure.database.DatabaseManagement;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -29,7 +30,7 @@ public class UserManager {
     public static void userCreate(String name, String email) throws SQLException{
 
         if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty())
-            throw new IllegalArgumentException("User was not created! Name or email is empty");
+            throw new IllegalArgumentException("Invalid name or email");
 
         name = name.trim().toLowerCase();
         email = email.trim().toLowerCase();
@@ -45,8 +46,12 @@ public class UserManager {
     }
 
     public static User userDataSearch(String name,String email) throws SQLException {
-        if(name == null || email == null)
-            throw new IllegalArgumentException("Name or email cannot be null");
+
+        if (name == null || name.trim().isEmpty()
+                || email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid name or email");
+        }
+
 
         name = name.trim().toLowerCase();
         email = email.trim().toLowerCase();
@@ -69,45 +74,52 @@ public class UserManager {
     }
 
     //_____________________________SaveProfile_______________________________________________________
-    public static SaveProfile saveProfileClassCreate(String user_id, String name, Double saving_rate){
-        SaveProfile saveProfileUser1 = new SaveProfile(user_id,name,saving_rate);
-        return saveProfileUser1;
+    public static SaveProfile saveProfileClassCreate(String user_id, String name, double saving_rate){
+        return new SaveProfile(user_id,name,saving_rate);
     }
 
-    public static void saveProfileInDatabaseCreate(SaveProfile saveProfile){
+    public static void saveProfileInDatabaseCreate(SaveProfile saveProfile) throws SQLException{
         DatabaseManagement.saveProfileInsert(
                 saveProfile.getUser_id(), saveProfile.getSave_id(), saveProfile.getName(),saveProfile.getSaving_rate());
     }
 
-    public static void saveProfileCreate(String user_id, String name, Double saving_rate){
-        name = name.toLowerCase();
+    public static void saveProfileCreate(String user_id, String name, double saving_rate)throws SQLException{
 
-        SaveProfile saveProfileUser1 = saveProfileClassCreate( user_id,  name,  saving_rate/100);
-        saveProfileInDatabaseCreate(saveProfileUser1);
+        if(user_id == null || user_id.trim().isEmpty()
+                || name == null || name.trim().isEmpty()
+                || saving_rate <= 0 || saving_rate > 100
+                || !Double.isFinite(saving_rate))
+            throw new IllegalArgumentException("Invalid SaveProfile parameters!");
+
+        name = name.trim().toLowerCase();
+
+        SaveProfile saveProfileUser = saveProfileClassCreate( user_id,  name,  saving_rate/100);
+        saveProfileInDatabaseCreate(saveProfileUser);
     }
 
-    public static ArrayList<SaveProfile> saveProfilesSearch(String user_id){
+    public static ArrayList<SaveProfile> saveProfilesSearch(String user_id) throws SQLException{
         return DatabaseManagement.saveProfileSearch(user_id);
     }
 
-    public static SaveProfile saveProfileSearch(String user_id, String save_id){
+    public static SaveProfile saveProfileSearch(String user_id, String save_id) throws SQLException{
 
         ArrayList<SaveProfile> saveProfilesList = saveProfilesSearch(user_id);
+
         for(SaveProfile saveProfile1 : saveProfilesList  ){
             if(saveProfile1.getSave_id().equals(save_id))
                 return saveProfile1;
         }
-        return null;
+        throw new NoSuchElementException("SaveProfile not found!");
     }
 
     //________________________________IncomeSource___________________________________________________
     public static IncomeSource incomeSourceClassCreate(String user_id, String save_id,
-                                            String name, Double amount , String description, Boolean isActive){
-        IncomeSource incomeSource1 = new IncomeSource(save_id, user_id, name, amount,description, isActive );
-        return incomeSource1;
+                                            String name, double amount , String description, Boolean isActive){
+
+        return new IncomeSource(save_id, user_id, name, amount,description, isActive );
     }
 
-    public static void incomeSourceInDataBase(IncomeSource incomeSource1){
+    public static void incomeSourceInDataBase(IncomeSource incomeSource1) throws SQLException{
         DatabaseManagement.incomeSourceInsert(
                 incomeSource1.getIncome_id(),
                 incomeSource1.getId(),
@@ -118,28 +130,40 @@ public class UserManager {
                 incomeSource1.isActive());
     }
 
-    public static void incomeSourceCreate(String user_id, String save_id,String name, Double amount , String description, Boolean isActive){
-        name = name.toLowerCase();
+    public static void incomeSourceCreate(String user_id, String save_id, String name,
+                                          double amount , String description, Boolean isActive) throws SQLException{
+
+        if(user_id == null || user_id.trim().isEmpty() ||
+                save_id == null || save_id.trim().isEmpty() ||
+                name == null || name.trim().isEmpty() ||
+                amount <= 0 ||
+                amount > 100)
+            throw new IllegalArgumentException("Invalid incomeSource parameters");
+
+        name = name.trim().toLowerCase();
 
         IncomeSource incomeSource1 = incomeSourceClassCreate(user_id,save_id,name,amount,description,isActive);
         incomeSourceInDataBase(incomeSource1);
     }
 
-    public static ArrayList<IncomeSource> incomeSourcesSearch(String user_id, String save_id){
+    public static ArrayList<IncomeSource> incomeSourcesSearch(String user_id, String save_id) throws SQLException{
         return DatabaseManagement.incomeSourceSearch(user_id,save_id);
     }
 
-    public static Integer incomeSourceUpdate(String name, Double amount,String description, Boolean active,
-                                             String id, String save_id,String income_id){
-        name = name.toLowerCase();
+    public static void incomeSourceUpdate(String name, double amount,String description, Boolean active,
+                                             String id, String save_id,String income_id) throws SQLException{
+        if(save_id == null || save_id.trim().isEmpty() ||
+                name == null || name.trim().isEmpty() ||
+                amount  <= 0 ||
+                amount  > 100)
+            throw new IllegalArgumentException("Invalid incomeSource parameters");
 
-        if(DatabaseManagement.incomeSourceUpdate(
-                name,  amount, description,  active,
-                 id,  save_id, income_id ) == 0) return 0;
-        else return -1;
+        name = name.trim().toLowerCase();
+
+        DatabaseManagement.incomeSourceUpdate( name,  amount, description,  active, id,  save_id, income_id );
     }
 
-    public static double total_income_calculation(String user_id, String save_id){
+    public static double total_income_calculation(String user_id, String save_id) throws SQLException{
         ArrayList<IncomeSource> incomeSourceList = incomeSourcesSearch(user_id,save_id );
         double total_income = 0;
         for (IncomeSource incomeSource : incomeSourceList) {
@@ -151,11 +175,10 @@ public class UserManager {
 
     //__________________________________SavingsCategory__________________________________________
     public static SavingsCategory savingsCategoryClassCreate(String id, String save_id, String name, double percent, String description) {
-        SavingsCategory savingsCategory1 = new SavingsCategory( save_id,  id,  name,  percent,  description);
-        return savingsCategory1;
+        return  new SavingsCategory( save_id,  id,  name,  percent,  description);
     }
 
-    public static void savingsCategoryInDataBase(SavingsCategory savingsCategory1){
+    public static void savingsCategoryInDataBase(SavingsCategory savingsCategory1) throws SQLException{
         DatabaseManagement.savingsCategoryInsert(
                 savingsCategory1.getCategory_id(),
                 savingsCategory1.getSave_id(),
@@ -165,28 +188,27 @@ public class UserManager {
                 savingsCategory1.getDescription());
     }
 
-    public static void savingsCategoryCreate(String id, String save_id,  String name, double percent, String description) {
-        name = name.toLowerCase();
+    public static void savingsCategoryCreate(String id, String save_id,  String name, double percent, String description) throws SQLException{
+
+        if (name == null || name.trim().isEmpty()
+                || id == null || id.trim().isEmpty()
+                || save_id == null || save_id.trim().isEmpty()
+                || percent < 0 || percent >= 100
+                || !Double.isFinite(percent)) {
+            throw new IllegalArgumentException("Invalid savingsCategory parameters");
+        }
+
+        name = name.trim().toLowerCase();
+
         SavingsCategory savingsCategory1 = savingsCategoryClassCreate(id, save_id,  name, percent/100 , description);
         savingsCategoryInDataBase(savingsCategory1);
     }
 
-    public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) {
+    public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) throws SQLException{
         return DatabaseManagement.savingsCategorySearch(user_id,save_id);
     }
 
-    public static double target_savings_calculation(String user_id, String save_id){
-        double total_income = total_income_calculation(user_id,save_id );
-        SaveProfile saveProfile1;
-        if(saveProfileSearch(user_id, save_id) == null){
-            System.out.println("(target_savings_calculation) ERROR: saveProfileSearch return null");
-            return -1;
-        }
-        saveProfile1 = saveProfileSearch(user_id, save_id);
-        double savings_rate = saveProfile1.getSaving_rate();
 
-        return  savings_rate * total_income;
-    }
 
     public static double abc (double a,double b){
         return a - b;

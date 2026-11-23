@@ -4,6 +4,8 @@ import org.application.AnalysisManager;
 import org.application.UserManager;
 import org.domain.*;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
@@ -194,13 +196,13 @@ public class CLI {
 
     }
 
-    public static void incomeSourceCreate(String user_id, String save_id) {
+    public static void incomeSourceCreate(String user_id, String save_id) throws SQLException {
         Style.header("IncomeSource Create");
 
         IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
 
         String name = incomeSourceInputElement.getName();
-        Double amount = incomeSourceInputElement.getAmount();
+        double amount = incomeSourceInputElement.getAmount();
         String description = incomeSourceInputElement.getDescription();
         Boolean isActive = incomeSourceInputElement.isActive();
 
@@ -263,7 +265,7 @@ public class CLI {
                 IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
 
                 String name = incomeSourceInputElement.getName();
-                Double amount = incomeSourceInputElement.getAmount();
+                double amount = incomeSourceInputElement.getAmount();
                 String description = incomeSourceInputElement.getDescription();
                 Boolean isActive = incomeSourceInputElement.isActive();
 
