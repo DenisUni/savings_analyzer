@@ -137,7 +137,7 @@ public class UserManager {
                 save_id == null || save_id.trim().isEmpty() ||
                 name == null || name.trim().isEmpty() ||
                 amount <= 0 ||
-                amount > 100)
+                Double.isFinite(amount))
             throw new IllegalArgumentException("Invalid incomeSource parameters");
 
         name = name.trim().toLowerCase();
@@ -155,7 +155,7 @@ public class UserManager {
         if(save_id == null || save_id.trim().isEmpty() ||
                 name == null || name.trim().isEmpty() ||
                 amount  <= 0 ||
-                amount  > 100)
+                !Double.isFinite(amount))
             throw new IllegalArgumentException("Invalid incomeSource parameters");
 
         name = name.trim().toLowerCase();

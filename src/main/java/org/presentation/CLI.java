@@ -4,6 +4,7 @@ import org.application.AnalysisManager;
 import org.application.UserManager;
 import org.domain.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -19,7 +20,6 @@ import static org.presentation.Style.*;
 public class CLI {
 
     private static final Scanner scanner = new Scanner(System.in);
-
 
     //___________________User______________________________________
     public static void userDataInput() throws SQLException {
@@ -55,7 +55,7 @@ public class CLI {
 
     }
 
-    public static String startPage() throws SQLException{
+    public static String startPage() throws SQLException {
         logo();
         Style.header("Start Page");
         String answer;
@@ -68,11 +68,10 @@ public class CLI {
         answer = scanner.nextLine();
 
 
-        if (Objects.equals(answer, "0")){
+        if (Objects.equals(answer, "0")) {
             userDataInput();
             return userLogin();
-        }
-        else if (Objects.equals(answer, "1")) {
+        } else if (Objects.equals(answer, "1")) {
             return userLogin();
         }
 
@@ -102,7 +101,7 @@ public class CLI {
 
         //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
         menuItem("0", "Create a new profile");
-        menuItem("1", "Select a exist profile");
+        menuItem("1", "Select an exist profile");
         menuItem("2", "Exit (coming soon)");
         separator();
 
@@ -113,25 +112,19 @@ public class CLI {
             profileDataInput(user_id);
             ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
             return profilesList.get(0).getSave_id();
-
-        }
-
-
-        else if (answer.equals("1")) {
+        } else if (answer.equals("1")) {
             ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
 
             if (profilesList.size() > 1) {
 
                 for (int i = 0; i < profilesList.size(); i++)
-                    menuItem( ""+i , " Name: " +  profilesList.get(i).getName() + " | Rate: " + profilesList.get(i).getSaving_rate()*100+"%") ;
+                    menuItem("" + i, " Name: " + profilesList.get(i).getName() + " | Rate: " + profilesList.get(i).getSaving_rate() * 100 + "%");
 
                 System.out.println("Select profile: (0 or 1 or ...)");
                 int index = Integer.parseInt(scanner.nextLine());
 
                 return profilesList.get(index).getSave_id();
-            }
-
-            else if (profilesList.size() == 1)
+            } else if (profilesList.size() == 1)
                 return profilesList.get(0).getSave_id();
         }
 
@@ -140,38 +133,33 @@ public class CLI {
 
     //___________________IncomeSource______________________________________________
     public static IncomeSourceInputElement incomeSourceInput() {
-        String name;
-        double amount;
-        String description;
+
         boolean isActive;
-        try {
-            System.out.println("IncomeSource name:");
-            name = scanner.nextLine();
-            System.out.println("Amount:");
-            String amount_temp = scanner.nextLine();
-            amount = Double.parseDouble(amount_temp);
-            System.out.println("Description:");
-            description = scanner.nextLine();
 
-            menuItem("0", "Is Active");
-            menuItem("1", "Not Active");
+        System.out.println("IncomeSource name:");
+        String name = scanner.nextLine();
 
-            //System.out.println("Is Active (y) or Not Active (n) now :");
+        System.out.println("Amount:");
+        String amount_temp = scanner.nextLine();
 
-            String isActive_tmp = scanner.nextLine();
-            if (isActive_tmp.equals("0")) isActive = true;
-            else if (isActive_tmp.equals("1")) isActive = false;
-            else {
-                error("Not correct input");
+        double amount = Double.parseDouble(amount_temp);
+        System.out.println("Description:");
+        String description = scanner.nextLine();
 
-                return null;
-            }
-            return new IncomeSourceInputElement(name, amount, description, isActive);
+        menuItem("0", "Is Active");
+        menuItem("1", "Not Active");
 
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        return null;
+        //System.out.println("Is Active (y) or Not Active (n) now :");
+
+        String isActive_tmp = scanner.nextLine();
+        if (isActive_tmp.equals("0"))
+            isActive = true;
+        else if (isActive_tmp.equals("1"))
+            isActive = false;
+        else
+            throw new IllegalArgumentException("Incorrect input");
+
+        return new IncomeSourceInputElement(name, amount, description, isActive);
 
     }
 
@@ -190,72 +178,76 @@ public class CLI {
         success("(incomeSourceCreate) created! ");
     }
 
-    public static void incomeSourcesShow(String user_id, String save_id) throws SQLException{
+    public static void incomeSourcesShow(String user_id, String save_id) throws SQLException {
+
         ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
 
         if (incomeSourcesList.size() > 1) {
 
             for (int i = 0; i < incomeSourcesList.size(); i++) {
-                menuItem(""+i + "" ,   incomeSourcesList.get(i).getName()+ " "
-                        +incomeSourcesList.get(i).getAmount() + " Euro "
-                        + incomeSourcesList.get(i).getDescription()+" "
-                + incomeSourcesList.get(i).isActive() + " ");
+                menuItem(i + " ", incomeSourcesList.get(i).getName() + " "
+                        + incomeSourcesList.get(i).getAmount() + " Euro "
+                        + incomeSourcesList.get(i).getDescription() + " "
+                        + incomeSourcesList.get(i).isActive() + " ");
             }
 
         } else if (incomeSourcesList.size() == 1) {
             System.out.println(incomeSourcesList.get(0).toString());
-            menuItem("0" ,   " Name: " + incomeSourcesList.get(0).getName()+
-                    "Amount: " +incomeSourcesList.get(0).getAmount() + "Euro " +
-                    "Description: " + incomeSourcesList.get(0).getDescription()+" " +
+            menuItem("0", " Name: " + incomeSourcesList.get(0).getName() +
+                    "Amount: " + incomeSourcesList.get(0).getAmount() + "Euro " +
+                    "Description: " + incomeSourcesList.get(0).getDescription() + " " +
                     "isActive: " + incomeSourcesList.get(0).isActive() + " ");
 
         } else
             throw new NoSuchElementException("(incomeSourcePage) if-else or list is empty");
     }
 
-    public static void incomeSourcePage(String user_id, String save_id) {
+    public static void incomeSourcePage(String user_id, String save_id) throws SQLException {
         Style.header(" IncomeSource Page ");
+
+
+        menuItem("0", "create");
+        menuItem("1", "show");
+        menuItem("2", "update");
+        menuItem("3", "delete ( come soon! )");
+
+        //System.out.println("Do you want create (c), show (s), Update (u) ( come soon! ) or delete ( come soon! ) (d) your 'IncomeSource'? ");
         String answer;
-        try {
+        answer = scanner.nextLine();
 
-            menuItem("0", "create");
-            menuItem("1", "show");
-            menuItem("2", "update");
-            menuItem("3", "delete ( come soon! )");
+        //User can many incomeSources have
+        if (answer.equals("0"))
+            incomeSourceCreate(user_id, save_id);
 
-            //System.out.println("Do you want create (c), show (s), Update (u) ( come soon! ) or delete ( come soon! ) (d) your 'IncomeSource'? ");
+        else if (answer.equals("1"))
+            incomeSourcesShow(user_id, save_id);
+
+        else if (answer.equals("2")) {
+
+            ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
+
+            incomeSourcesShow(user_id, save_id);
+
+            System.out.println("Which source should be updated (0 or 1 or ...)?");
             answer = scanner.nextLine();
 
-            //User can many incomeSources have
-            if (answer.equals("0")) incomeSourceCreate(user_id, save_id);
+            int answer_int = Integer.parseInt(answer);
 
-            else if (answer.equals("1")) {
-                incomeSourcesShow(user_id, save_id);
-            } else if (answer.equals("2")) {
-                ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
+            IncomeSource incomeSourceToUpdate = incomeSourcesList.get(answer_int);
 
-                incomeSourcesShow(user_id, save_id);
+            IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
 
-                System.out.println("Which source should be updated (0 or 1 or ...)?");
-                answer = scanner.nextLine();
-                //Input Validation!
-                int answer_int = Integer.parseInt(answer);
+            String name = incomeSourceInputElement.getName();
+            double amount = incomeSourceInputElement.getAmount();
+            String description = incomeSourceInputElement.getDescription();
+            Boolean isActive = incomeSourceInputElement.isActive();
 
-                IncomeSource incomeSourceToUpdate = incomeSourcesList.get(answer_int);
-                IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
+            UserManager.incomeSourceUpdate(
+                    name, amount, description, isActive, user_id, save_id, incomeSourceToUpdate.getIncome_id());
+            success("Updated !");
+        } else
+            throw new IllegalArgumentException("Incorrect input");
 
-                String name = incomeSourceInputElement.getName();
-                double amount = incomeSourceInputElement.getAmount();
-                String description = incomeSourceInputElement.getDescription();
-                Boolean isActive = incomeSourceInputElement.isActive();
-
-                UserManager.incomeSourceUpdate(
-                        name, amount, description, isActive, user_id, save_id, incomeSourceToUpdate.getIncome_id());
-                success("Updated !");
-            }
-        } catch (Exception e) {
-            System.out.println("(incomeSourcePage) Error: " + e.getMessage());  //Logger
-        }
     }
 
     //___________________SavingsCategory______________________________________________________________
@@ -283,48 +275,47 @@ public class CLI {
         }
     }
 
-    public static void savingsCategoryPage(String user_id, String save_id) {
+    public static void savingsCategoryPage(String user_id, String save_id) throws SQLException {
         Style.header("SavingsCategory Page ");
         String answer;
 
-        try {
-            //System.out.println("Do you want create (c), show (s), change (c) ( come soon! ) or delete ( come soon! ) (d) your 'SavingsCategory'? ");
-            menuItem("0", "create");
-            menuItem("1", "show");
-            menuItem("2", "update ( come soon! )");
-            menuItem("3", "delete ( come soon! )");
+        menuItem("0", "create");
+        menuItem("1", "show");
+        menuItem("2", "update ( come soon! )");
+        menuItem("3", "delete ( come soon! )");
 
-            answer = scanner.nextLine();
+        answer = scanner.nextLine();
 
-            //User can many SavingsCategories have
-            if (answer.equals("0")) savingsCategoryDataInput(user_id, save_id);
+        //User can many SavingsCategories have
+        if (answer.equals("0"))
+            savingsCategoryDataInput(user_id, save_id);
 
-            else if (answer.equals("1")) {
-                ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id, save_id);
+        else if (answer.equals("1")) {
+            ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id, save_id);
 
-                if (savingsCategoriesList.size() > 1) {
+            if (savingsCategoriesList.size() > 1) {
 
-                    for (int i = 0; i < savingsCategoriesList.size(); i++) {
-                        //System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
-                        menuItem("" + i + "" ,
-                                " Name: " + savingsCategoriesList.get(i).getName() +
-                                " Present: " + savingsCategoriesList.get(i).getPercent() + " %" +
-                                " Description: " + savingsCategoriesList.get(i).getDescription() + "." );
-                    }
+                for (int i = 0; i < savingsCategoriesList.size(); i++) {
+                    //System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
+                    menuItem(i + "",
+                            " Name: " + savingsCategoriesList.get(i).getName() +
+                                    " Present: " + savingsCategoriesList.get(i).getPercent() + " %" +
+                                    " Description: " + savingsCategoriesList.get(i).getDescription() + ".");
+                }
 
-                } else if (savingsCategoriesList.size() == 1) {
-                    System.out.println(savingsCategoriesList.get(0).toString());
-                } else throw new NoSuchElementException("ERROR (savingsCategoryPage) if-else or list is empty");
-            }
+            } else if (savingsCategoriesList.size() == 1) {
+                System.out.println(savingsCategoriesList.get(0).toString());
 
-        } catch (Exception e) {
-            System.out.println("(savingsCategoryPage) Error: " + e.getMessage());
-        }
+            } else
+                throw new NoSuchElementException("ERROR (savingsCategoryPage) if-else or list is empty");
+        } else
+            throw new IllegalArgumentException("Incorrect input");
+
     }
 
     //___________________Analysis_______________________________________
-    public static void basicAnalysis(String user_id, String save_id) {
-    try{
+    public static void basicAnalysis(String user_id, String save_id) throws SQLException, IOException {
+
         ArrayList<Double> list = AnalysisManager.basicCalculation();
         double total_income = list.get(2);
         double predefinedTotalIncome = UserManager.total_income_calculation(user_id, save_id);
@@ -332,35 +323,24 @@ public class CLI {
         int resultIncomeCheck = AnalysisManager.incomeCheck(user_id, save_id);
 
         if (resultIncomeCheck == 1 || resultIncomeCheck == 2) {
-            System.out.println("Please correct your predefined Incomes.");
-            System.out.println("predefined: " + predefinedTotalIncome + " and your income: " + total_income);
-            //a function (page) to correct
+            error("Please correct your predefined Incomes.");
+            error("predefined: " + predefinedTotalIncome + " and your income: " + total_income);
+            incomeSourcePage(user_id, save_id);
 
         } else if (resultIncomeCheck == -1) {
-            System.out.println("ERROR: Your income is less than zero, zero or null");
-            System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
+            error("ERROR: Your income is less than zero, zero or null");
+            error("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
+            incomeSourcePage(user_id, save_id);
 
         } else if (resultIncomeCheck == 0) {
-            System.out.println("Your income remains the same as the amount you predefined!");
-            System.out.println("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
+            success("Your income remains the same as the amount you predefined!");
+            success("predefined: " + predefinedTotalIncome + " and your income:" + total_income);
 
             ArrayList<DistributionListElement> distributionListElementList = AnalysisManager.distributionOfSavings(user_id, save_id);
 
             for (int i = 0; i < distributionListElementList.size(); i++) {
                 System.out.println(distributionListElementList.get(i).toString());
             }
-
-        } else {
-            System.out.println("(basicAnalysis) ERROR");
-            //a function (page) to fix
-            return;
         }
     }
-    catch (Exception e){
-        System.out.println(e.getMessage());
-    }
-    }
-
-
-
 }
