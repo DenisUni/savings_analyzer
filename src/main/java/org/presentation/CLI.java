@@ -4,9 +4,9 @@ import org.application.AnalysisManager;
 import org.application.UserManager;
 import org.domain.*;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -18,145 +18,124 @@ import static org.presentation.Style.*;
 
 public class CLI {
 
-
     private static final Scanner scanner = new Scanner(System.in);
 
 
     //___________________User______________________________________
-    public static void userDataInput() {
+    public static void userDataInput() throws SQLException {
 
         Style.header("User Create ");
 
+        System.out.println("Your name:");
+        String name = scanner.nextLine();
+        separator();
 
-        String name;
-        String email;
+        System.out.println("Your email:");
+        String email = scanner.nextLine();
+        UserManager.userCreate(name, email);
 
-        try {
-            System.out.println("Your name:");
-            name = scanner.nextLine();
-            separator();
-
-            System.out.println("Your email:");
-            email = scanner.nextLine();
-            UserManager.userCreate(name, email);
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
     }
 
-    public static String userLogin() {
+    public static String userLogin() throws SQLException {
+
         Style.header("Login Page");
 
-        try {
-            System.out.println("Your name:");
-            String name = scanner.nextLine();
-            separator();
-            System.out.println("Your email:");
-            String email = scanner.nextLine();
+        System.out.println("Your name:");
+        String name = scanner.nextLine();
+        separator();
 
-            if (UserManager.userDataSearch(name, email) != null) {
-                success("Find!");
-                User user1 = UserManager.userDataSearch(name, email); //change output on a String (toSting) for CLI not an Object
-                System.out.println(user1.toString());   //Logger
-                return user1.getId();
-            } else error("Not Find");
+        System.out.println("Your email:");
+        String email = scanner.nextLine();
 
-        } catch (Exception e) {
-            System.out.println("ERROR: " + e.getMessage());
-        }
-        return null;
+        User user1 = UserManager.userDataSearch(name, email); //change output on a String (toSting) for CLI not an Object
+        success("Find!");
+
+        //System.out.println(user1.toString());   //Logger
+        return user1.getId();
+
     }
 
-    public static String startPage() {
+    public static String startPage() throws SQLException{
         logo();
         Style.header("Start Page");
         String answer;
 
-        try {
-            //System.out.println("Do you want registration (r) or login (l) ? ");
+        menuItem("0", "Create a new account");
+        menuItem("1", "Login");
+        menuItem("2", "Exit (coming soon)");
+        separator();
 
-            menuItem("0", "Create a new account");
-            menuItem("1", "Login");
-            menuItem("2", "Exit (coming soon)");
-            separator();
-
-            answer = scanner.nextLine();
+        answer = scanner.nextLine();
 
 
-            if (Objects.equals(answer, "0")) userDataInput();
-            else if (Objects.equals(answer, "1")) {
-                String user_id = userLogin();
-                return user_id;
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        if (Objects.equals(answer, "0")){
+            userDataInput();
+            return userLogin();
         }
-        return null;
+        else if (Objects.equals(answer, "1")) {
+            return userLogin();
+        }
+
+        throw new IllegalArgumentException("Invalid input");
+
     }
 
     //___________________SaveProfile______________________________________________
-    public static void profileDataInput(String user_id) {
+    public static void profileDataInput(String user_id) throws SQLException {
         Style.header("Profile Create");
 
-        String save_profile_name;
-        String saves_rate_tmp;
-        double saves_rate;
 
-        try {
-            System.out.println("Profile name:");
-            save_profile_name = scanner.nextLine();
-            separator();
-            System.out.println("Saves rate:");
-            saves_rate_tmp = scanner.nextLine();
-            separator();
-            saves_rate = Double.parseDouble(saves_rate_tmp);
-            UserManager.saveProfileCreate(user_id, save_profile_name, saves_rate);
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        System.out.println("Profile name:");
+        String save_profile_name = scanner.nextLine();
+        separator();
+        System.out.println("Saves rate:");
+        String saves_rate_tmp = scanner.nextLine();
+        separator();
+        double saves_rate = Double.parseDouble(saves_rate_tmp);
+        UserManager.saveProfileCreate(user_id, save_profile_name, saves_rate);
 
     }
 
-    public static String profilePage(String user_id) {
+    public static String profilePage(String user_id) throws SQLException {
         Style.header("Profile Page");
         String answer;
 
-        try {
-            //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
-            menuItem("0", "Create a new profile");
-            menuItem("1", "Select a exist profile");
-            menuItem("2", "Exit (coming soon)");
-            separator();
+        //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
+        menuItem("0", "Create a new profile");
+        menuItem("1", "Select a exist profile");
+        menuItem("2", "Exit (coming soon)");
+        separator();
 
-            answer = scanner.nextLine();
+        answer = scanner.nextLine();
 
-            //User can many Profiles have
-            if (answer.equals("0")) profileDataInput(user_id);
+        //User can many Profiles have
+        if (answer.equals("0")) {
+            profileDataInput(user_id);
+            ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
+            return profilesList.get(0).getSave_id();
 
-            else if (answer.equals("1   ")) {
-                ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
-
-                if (profilesList.size() > 1) {
-                    for (int i = 0; i < profilesList.size(); i++) {
-                        menuItem( ""+i+"" , "Name: " +  profilesList.get(i).getName() + " | Rate: " + profilesList.get(i).getSaving_rate()*100+"%") ;
-                    }
-                    System.out.println("Select profile: (0 or 1 or ...)");
-                    int index = Integer.parseInt(scanner.nextLine());
-
-                    return profilesList.get(index).getSave_id();
-                } else if (profilesList.size() == 1) {
-                    return profilesList.get(0).getSave_id();
-                }
-                System.out.println("(profilePage) ERROR "); // Logger
-
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
         }
-        return null;
+
+
+        else if (answer.equals("1")) {
+            ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
+
+            if (profilesList.size() > 1) {
+
+                for (int i = 0; i < profilesList.size(); i++)
+                    menuItem( ""+i , " Name: " +  profilesList.get(i).getName() + " | Rate: " + profilesList.get(i).getSaving_rate()*100+"%") ;
+
+                System.out.println("Select profile: (0 or 1 or ...)");
+                int index = Integer.parseInt(scanner.nextLine());
+
+                return profilesList.get(index).getSave_id();
+            }
+
+            else if (profilesList.size() == 1)
+                return profilesList.get(0).getSave_id();
+        }
+
+        throw new IllegalArgumentException("Invalid input");
     }
 
     //___________________IncomeSource______________________________________________
@@ -211,7 +190,7 @@ public class CLI {
         success("(incomeSourceCreate) created! ");
     }
 
-    public static void incomeSourcesShow(String user_id, String save_id) {
+    public static void incomeSourcesShow(String user_id, String save_id) throws SQLException{
         ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
 
         if (incomeSourcesList.size() > 1) {
@@ -230,7 +209,8 @@ public class CLI {
                     "Description: " + incomeSourcesList.get(0).getDescription()+" " +
                     "isActive: " + incomeSourcesList.get(0).isActive() + " ");
 
-        } else error("ERROR (incomeSourcePage) if-else or list is empty");
+        } else
+            throw new NoSuchElementException("(incomeSourcePage) if-else or list is empty");
     }
 
     public static void incomeSourcePage(String user_id, String save_id) {
@@ -334,7 +314,7 @@ public class CLI {
 
                 } else if (savingsCategoriesList.size() == 1) {
                     System.out.println(savingsCategoriesList.get(0).toString());
-                } else error("ERROR (savingsCategoryPage) if-else or list is empty");
+                } else throw new NoSuchElementException("ERROR (savingsCategoryPage) if-else or list is empty");
             }
 
         } catch (Exception e) {
@@ -344,6 +324,7 @@ public class CLI {
 
     //___________________Analysis_______________________________________
     public static void basicAnalysis(String user_id, String save_id) {
+    try{
         ArrayList<Double> list = AnalysisManager.basicCalculation();
         double total_income = list.get(2);
         double predefinedTotalIncome = UserManager.total_income_calculation(user_id, save_id);
@@ -375,4 +356,11 @@ public class CLI {
             return;
         }
     }
+    catch (Exception e){
+        System.out.println(e.getMessage());
+    }
+    }
+
+
+
 }

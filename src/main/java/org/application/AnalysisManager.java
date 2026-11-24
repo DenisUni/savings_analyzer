@@ -6,6 +6,7 @@ import org.domain.SavingsCategory;
 import org.infrastructure.csv.CSVManagement;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AnalysisManager {
@@ -24,7 +25,7 @@ public class AnalysisManager {
 
 
     /** return : error -1 ; ok 0 ; less 1 , greater 2 */
-    public static int incomeCheck(String user_id, String save_id ) {
+    public static int incomeCheck(String user_id, String save_id ) throws IOException, SQLException,CsvParseException {
 
         ArrayList<Double> list = basicCalculation();
         double predefinedTotalIncome = UserManager.total_income_calculation(user_id, save_id);
@@ -38,7 +39,7 @@ public class AnalysisManager {
             return 0;
 
         } else if (predefinedTotalIncome > total_income) {
-            System.out.println("Your income is less than the amount you set!");
+            //System.out.println("Your income is less than the amount you set!");
             return 1;
 
         } else if (predefinedTotalIncome < total_income) {
@@ -48,7 +49,9 @@ public class AnalysisManager {
 
     }
 
-    public static ArrayList<DistributionListElement> distributionOfSavings(String user_id, String save_id){
+    public static ArrayList<DistributionListElement> distributionOfSavings(String user_id, String save_id)
+            throws IOException, SQLException, CsvParseException{
+
         ArrayList<Double> list = basicCalculation();
         double total_income = list.get(2);
 
