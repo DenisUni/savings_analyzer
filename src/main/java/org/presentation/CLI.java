@@ -56,26 +56,37 @@ public class CLI {
     }
 
     public static String startPage() throws SQLException {
-        logo();
-        Style.header("Start Page");
-        String answer;
 
-        menuItem("0", "Create a new account");
-        menuItem("1", "Login");
-        menuItem("2", "Exit (coming soon)");
-        separator();
+        while(true){
+            try{
+                logo();
+                Style.header("Start Page");
+                String answer;
 
-        answer = scanner.nextLine();
+                menuItem("0", "Create a new account");
+                menuItem("1", "Login");
+                menuItem("2", "Exit (coming soon)");
+                separator();
+
+                answer = scanner.nextLine().trim();
 
 
-        if (Objects.equals(answer, "0")) {
-            userDataInput();
-            return userLogin();
-        } else if (Objects.equals(answer, "1")) {
-            return userLogin();
+                if (Objects.equals(answer, "0")) {
+                    userDataInput();
+                    return userLogin();
+                } else if (Objects.equals(answer, "1")) {
+                    return userLogin();
+                }
+                throw new IllegalArgumentException("Invalid input");
+
+            }
+            catch (IllegalArgumentException e){
+                System.out.println("Input Error: " + e.getMessage());
+            }
+            catch (NoSuchElementException e){
+                System.out.println("Database Error: " + e.getMessage());
+            }
         }
-
-        throw new IllegalArgumentException("Invalid input");
 
     }
 
@@ -90,45 +101,91 @@ public class CLI {
         System.out.println("Saves rate:");
         String saves_rate_tmp = scanner.nextLine();
         separator();
-        double saves_rate = Double.parseDouble(saves_rate_tmp);
+        double saves_rate;
+        try{
+            saves_rate = Double.parseDouble(saves_rate_tmp);
+
+        }
+        catch (NumberFormatException e){
+            throw new IllegalArgumentException("Please enter a valid number");
+        }
+        if (saves_rate <= 0 || saves_rate > 100) {
+            throw new IllegalArgumentException("Saving rate must be between 1 and 100");
+        }
+
         UserManager.saveProfileCreate(user_id, save_profile_name, saves_rate);
 
     }
 
     public static String profilePage(String user_id) throws SQLException {
-        Style.header("Profile Page");
-        String answer;
 
-        //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
-        menuItem("0", "Create a new profile");
-        menuItem("1", "Select an exist profile");
-        menuItem("2", "Exit (coming soon)");
-        separator();
+        while (true) {
+            try {
+                Style.header("Profile Page");
+                String answer;
 
-        answer = scanner.nextLine();
+                //System.out.println("Do you want registration (r) or select (l) your 'Save Profile'? ");
+                menuItem("0", "Create a new profile");
+                menuItem("1", "Select an exist profile");
+                menuItem("2", "Exit (coming soon)");
+                separator();
 
-        //User can many Profiles have
-        if (answer.equals("0")) {
-            profileDataInput(user_id);
-            ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
-            return profilesList.get(0).getSave_id();
-        } else if (answer.equals("1")) {
-            ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
+                answer = scanner.nextLine().trim();
 
-            if (profilesList.size() > 1) {
+                //User can many Profiles have
+                if (answer.equals("0")) {
+                    profileDataInput(user_id);
+                    ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
 
-                for (int i = 0; i < profilesList.size(); i++)
-                    menuItem("" + i, " Name: " + profilesList.get(i).getName() + " | Rate: " + profilesList.get(i).getSaving_rate() * 100 + "%");
+                    if (profilesList.isEmpty()) {
+                        throw new IllegalStateException("Profile could not be created.");
+                    }
+                    return profilesList.get(0).getSave_id();
 
-                System.out.println("Select profile: (0 or 1 or ...)");
-                int index = Integer.parseInt(scanner.nextLine());
+                } else if (answer.equals("1")) {
+                    ArrayList<SaveProfile> profilesList = saveProfilesSearch(user_id);
 
-                return profilesList.get(index).getSave_id();
-            } else if (profilesList.size() == 1)
-                return profilesList.get(0).getSave_id();
+                    if (profilesList.isEmpty()) {
+                        throw new IllegalStateException("No profiles available. Create a profile first.");
+                    }
+
+
+                    for (int i = 0; i < profilesList.size(); i++)
+                        menuItem(String.valueOf(i),
+                                "Name: " + profilesList.get(i).getName()
+                                        + " | Rate: "
+                                        + profilesList.get(i).getSaving_rate()*100
+                                        + "%"
+                        );
+
+                    System.out.println("Select profile: (0 or 1 or ...)");
+
+                    int index;
+
+                    try {
+                        index = Integer.parseInt(scanner.nextLine().trim());
+
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Please enter a valid number.");
+                    }
+
+                    if (index < 0 || index >= profilesList.size()) {
+                        throw new IllegalArgumentException("Profile index does not exist.");
+                    }
+                    return profilesList.get(index).getSave_id();
+                }
+
+
+
+                throw new IllegalArgumentException("Invalid input");
+            }
+            catch (IllegalArgumentException e){
+                System.out.println("Input Error: " + e.getMessage());
+            }
+            catch (IllegalStateException e){
+                System.out.println(e.getMessage());
+            }
         }
-
-        throw new IllegalArgumentException("Invalid input");
     }
 
     //___________________IncomeSource______________________________________________
