@@ -120,6 +120,7 @@ public class CLI {
     public static String profilePage(String user_id) throws SQLException {
 
         while (true) {
+
             try {
                 Style.header("Profile Page");
                 String answer;
@@ -198,8 +199,17 @@ public class CLI {
 
         System.out.println("Amount:");
         String amount_temp = scanner.nextLine();
+        double amount;
 
-        double amount = Double.parseDouble(amount_temp);
+        try {
+            amount = Double.parseDouble(amount_temp);
+        }
+        catch (NumberFormatException e){
+            throw new IllegalArgumentException("Please enter a valid number",e);
+        }
+        if(amount <= 0 || !Double.isFinite(amount))
+            throw new IllegalArgumentException("The amount must be positive.");
+
         System.out.println("Description:");
         String description = scanner.nextLine();
 
@@ -239,135 +249,165 @@ public class CLI {
 
         ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
 
-        if (incomeSourcesList.size() > 1) {
-
-            for (int i = 0; i < incomeSourcesList.size(); i++) {
-                menuItem(i + " ", incomeSourcesList.get(i).getName() + " "
-                        + incomeSourcesList.get(i).getAmount() + " Euro "
-                        + incomeSourcesList.get(i).getDescription() + " "
-                        + incomeSourcesList.get(i).isActive() + " ");
-            }
-
-        } else if (incomeSourcesList.size() == 1) {
-            System.out.println(incomeSourcesList.get(0).toString());
-            menuItem("0", " Name: " + incomeSourcesList.get(0).getName() +
-                    "Amount: " + incomeSourcesList.get(0).getAmount() + "Euro " +
-                    "Description: " + incomeSourcesList.get(0).getDescription() + " " +
-                    "isActive: " + incomeSourcesList.get(0).isActive() + " ");
-
-        } else
-            throw new NoSuchElementException("(incomeSourcePage) if-else or list is empty");
-    }
-
-    public static void incomeSourcePage(String user_id, String save_id) throws SQLException {
-        Style.header(" IncomeSource Page ");
+        if(incomeSourcesList.isEmpty())
+            throw new NoSuchElementException("No profiles available. Create a profile first.");
 
 
-        menuItem("0", "create");
-        menuItem("1", "show");
-        menuItem("2", "update");
-        menuItem("3", "delete ( come soon! )");
-
-        //System.out.println("Do you want create (c), show (s), Update (u) ( come soon! ) or delete ( come soon! ) (d) your 'IncomeSource'? ");
-        String answer;
-        answer = scanner.nextLine();
-
-        //User can many incomeSources have
-        if (answer.equals("0"))
-            incomeSourceCreate(user_id, save_id);
-
-        else if (answer.equals("1"))
-            incomeSourcesShow(user_id, save_id);
-
-        else if (answer.equals("2")) {
-
-            ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
-
-            incomeSourcesShow(user_id, save_id);
-
-            System.out.println("Which source should be updated (0 or 1 or ...)?");
-            answer = scanner.nextLine();
-
-            int answer_int = Integer.parseInt(answer);
-
-            IncomeSource incomeSourceToUpdate = incomeSourcesList.get(answer_int);
-
-            IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
-
-            String name = incomeSourceInputElement.getName();
-            double amount = incomeSourceInputElement.getAmount();
-            String description = incomeSourceInputElement.getDescription();
-            Boolean isActive = incomeSourceInputElement.isActive();
-
-            UserManager.incomeSourceUpdate(
-                    name, amount, description, isActive, user_id, save_id, incomeSourceToUpdate.getIncome_id());
-            success("Updated !");
-        } else
-            throw new IllegalArgumentException("Incorrect input");
-
-    }
-
-    //___________________SavingsCategory______________________________________________________________
-    public static void savingsCategoryDataInput(String user_id, String save_id) {
-        Style.header(" SavingsCategory Create");
-
-        String name;
-        double percent;
-        String description;
-
-        try {
-            System.out.println("SavingsCategory name:");
-            name = scanner.nextLine();
-            separator();
-            System.out.println("Percent:");
-            String percent_temp = scanner.nextLine();
-            separator();
-            percent = Double.parseDouble(percent_temp);
-            System.out.println("Description:");
-            description = scanner.nextLine();
-
-            UserManager.savingsCategoryCreate(user_id, save_id, name, percent, description);
-        } catch (Exception e) {
-            System.out.println("(SavingsCategoryDataInput) Error: " + e.getMessage());
+        for (int i = 0; i < incomeSourcesList.size(); i++) {
+            menuItem(i + " ", incomeSourcesList.get(i).getName() + " "
+                    + incomeSourcesList.get(i).getAmount() + " Euro "
+                    + incomeSourcesList.get(i).getDescription() + " "
+                    + incomeSourcesList.get(i).isActive() + " ");
         }
     }
 
-    public static void savingsCategoryPage(String user_id, String save_id) throws SQLException {
-        Style.header("SavingsCategory Page ");
-        String answer;
+    public static void incomeSourcePage(String user_id, String save_id) throws SQLException {
 
-        menuItem("0", "create");
-        menuItem("1", "show");
-        menuItem("2", "update ( come soon! )");
-        menuItem("3", "delete ( come soon! )");
+        while(true) {
 
-        answer = scanner.nextLine();
+            try {
+                Style.header("IncomeSource Page ");
 
-        //User can many SavingsCategories have
-        if (answer.equals("0"))
-            savingsCategoryDataInput(user_id, save_id);
 
-        else if (answer.equals("1")) {
-            ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id, save_id);
+                menuItem("0", "create");
+                menuItem("1", "show");
+                menuItem("2", "update");
+                menuItem("3", "delete ( come soon! )");
 
-            if (savingsCategoriesList.size() > 1) {
+                String answer;
+                answer = scanner.nextLine();
 
-                for (int i = 0; i < savingsCategoriesList.size(); i++) {
-                    //System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
-                    menuItem(i + "",
-                            " Name: " + savingsCategoriesList.get(i).getName() +
-                                    " Present: " + savingsCategoriesList.get(i).getPercent() + " %" +
-                                    " Description: " + savingsCategoriesList.get(i).getDescription() + ".");
+                //User can many incomeSources have
+                if (answer.equals("0"))
+                    incomeSourceCreate(user_id, save_id);
+
+                else if (answer.equals("1")){
+                    incomeSourcesShow(user_id, save_id);
+                    break;
                 }
 
-            } else if (savingsCategoriesList.size() == 1) {
-                System.out.println(savingsCategoriesList.get(0).toString());
+                else if (answer.equals("2")) {
 
-            } else
-                throw new NoSuchElementException("ERROR (savingsCategoryPage) if-else or list is empty");
-        } else
-            throw new IllegalArgumentException("Incorrect input");
+                    ArrayList<IncomeSource> incomeSourcesList = incomeSourcesSearch(user_id, save_id);
 
+                    incomeSourcesShow(user_id, save_id);
+
+                    System.out.println("Which source should be updated (0 or 1 or ...)?");
+                    answer = scanner.nextLine();
+
+                    int index;
+
+                    try {
+                        index = Integer.parseInt(answer);
+                    }
+                    catch (NumberFormatException e){
+                        throw new IllegalArgumentException("Please enter a valid number");
+                    }
+
+                    if(index < 0 || index >= incomeSourcesList.size()){
+                        throw new IllegalArgumentException("Incorrect index.");
+                    }
+
+                    IncomeSource incomeSourceToUpdate = incomeSourcesList.get(index);
+
+                    IncomeSourceInputElement incomeSourceInputElement = incomeSourceInput();
+
+                    String name = incomeSourceInputElement.getName();
+                    double amount = incomeSourceInputElement.getAmount();
+                    String description = incomeSourceInputElement.getDescription();
+                    Boolean isActive = incomeSourceInputElement.isActive();
+
+                    UserManager.incomeSourceUpdate(
+                            name, amount, description, isActive, user_id, save_id, incomeSourceToUpdate.getIncome_id());
+                    success("Updated !");
+
+                } else
+                    throw new IllegalArgumentException("Incorrect input");
+            }
+            catch (NoSuchElementException e ){
+                System.out.println("Error:" + e.getMessage());
+            }
+            catch(IllegalArgumentException e){
+                System.out.println("Input Error: " + e.getMessage());
+            }
+
+        }
+    }
+
+    //___________________SavingsCategory______________________________________________________________
+    public static void savingsCategoryDataInput(String user_id, String save_id) throws SQLException {
+        Style.header(" SavingsCategory Create");
+
+        double percent;
+
+        System.out.println("SavingsCategory name:");
+        String name = scanner.nextLine();
+        separator();
+        System.out.println("Percent:");
+        String percent_temp = scanner.nextLine();
+        separator();
+
+        try{
+            percent = Double.parseDouble(percent_temp);
+        }
+        catch (NumberFormatException e){
+            throw new IllegalArgumentException("Please enter a valid number ",e );
+        }
+        if (percent <= 0 || percent > 100 || !Double.isFinite(percent)) {
+            throw new IllegalArgumentException("Percent must be greater than 0 and at most 100");
+        }            System.out.println("Description:");
+        String description = scanner.nextLine();
+
+        UserManager.savingsCategoryCreate(user_id, save_id, name, percent, description);
+
+    }
+
+    public static void savingsCategoryPage(String user_id, String save_id) throws SQLException {
+
+        while(true) {
+
+            try {
+                Style.header("SavingsCategory Page ");
+                String answer;
+
+                menuItem("0", "create");
+                menuItem("1", "show");
+                menuItem("2", "update ( come soon! )");
+                menuItem("3", "delete ( come soon! )");
+
+                answer = scanner.nextLine();
+
+                //User can have many SavingsCategories
+                if (answer.equals("0"))
+                    savingsCategoryDataInput(user_id, save_id);
+
+                else if (answer.equals("1")) {
+                    ArrayList<SavingsCategory> savingsCategoriesList = UserManager.savingsCategorySearch(user_id, save_id);
+
+
+                    if(savingsCategoriesList.isEmpty())
+                        throw new NoSuchElementException("No savingsCategory available. Create a profile first.");
+
+                    for (int i = 0; i < savingsCategoriesList.size(); i++) {
+                        //System.out.println(i + " : " + savingsCategoriesList.get(i).toString());
+                        menuItem(i + "",
+                                " Name: " + savingsCategoriesList.get(i).getName() +
+                                        " Present: " + savingsCategoriesList.get(i).getPercent() + " %" +
+                                        " Description: " + savingsCategoriesList.get(i).getDescription() + ".");
+                    }
+                    break;
+
+                } else
+                    throw new IllegalArgumentException("Incorrect input");
+
+            }
+            catch (NoSuchElementException e) {
+                System.out.println("Not Found: " + e.getMessage());
+            }
+            catch (IllegalArgumentException e) {
+                System.out.println("Input Error: " + e.getMessage());
+            }
+        }
     }
 
     //___________________Analysis_______________________________________
