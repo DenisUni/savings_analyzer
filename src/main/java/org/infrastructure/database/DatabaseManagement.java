@@ -16,15 +16,19 @@ import java.sql.SQLException;
 public class DatabaseManagement {
 
     //connection string
-    private static final String URL =
+    private static String URL =
             "jdbc:sqlite:src/main/java/org/infrastructure/database/database.db";
+
+    public static void setUrl(String url){
+        URL = url;
+    }
 
     public static void createTables()throws SQLException{
 
         String sqlUser = "CREATE TABLE IF NOT EXISTS User(" +
-                " id varchar primary key," +
-                " name varchar not null," +
-                " email varchar not null);";
+                " id varchar primary key CHECK (TRIM (id) <> '')," +
+                " name varchar not null CHECK (TRIM(name) <> '')," +
+                " email varchar not null CHECK (TRIM(email) <> ''));";
 
 
         String sqlSaveProfile = "CREATE TABLE IF NOT EXISTS SaveProfile(" +
@@ -56,6 +60,7 @@ public class DatabaseManagement {
                 "    active BOOLEAN not null," +
                 "    foreign key (save_id,id) references  SaveProfile(save_id,id)" +
                 ");";
+
              try (Connection conn =  DriverManager.getConnection(URL);
                   Statement stmt = conn.createStatement()){
                 //Create new tables
@@ -63,12 +68,7 @@ public class DatabaseManagement {
                 stmt.execute(sqlSaveProfile);
                 stmt.execute(SavingsCategory);
                 stmt.execute(IncomeSource);
-
-                //System.out.println("Tables successfully created."); //Logger
-
-            } /*catch (SQLException e) {
-                System.out.println("(createTables) ERROR :" + e.getMessage());
-            }*/
+            }
         }
 
     public static void userInsert(String id, String name, String email) throws SQLException {
@@ -81,12 +81,7 @@ public class DatabaseManagement {
             pstmt.setString(2,name);
             pstmt.setString(3,email);
             pstmt.executeUpdate();  //run the INSERT statement
-
-            System.out.println("User was in DB insert");
         }
-        /*catch (Exception e){
-            System.err.println(e.getMessage());
-        }*/
 
     }
 
@@ -119,9 +114,7 @@ public class DatabaseManagement {
             return result;
 
         }
-        /*catch(Exception e){
-                System.out.println(e.getMessage());
-        }*/
+
     }
 
     public static Boolean  userExist(String name,String email) throws SQLException{
@@ -148,9 +141,6 @@ public class DatabaseManagement {
             }
             if(names.contains(name) && emails.contains(email)) return true;
         }
-        /*catch(Exception e){
-            System.out.println(e.getMessage());
-        }*/
         return false;
     }
 

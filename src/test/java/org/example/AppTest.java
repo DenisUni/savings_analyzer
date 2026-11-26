@@ -1,5 +1,7 @@
 package org.example;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
