@@ -104,17 +104,16 @@ public class DatabaseManagement {
                 result.add(new User(rs.getString("id"),rs.getString("name"),rs.getString("email")));
 
                 //Debug
-                System.out.printf("%-25s%-25s%-25s%n",
+                /*System.out.printf("%-25s%-25s%-25s%n",
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getString("email")
-                );
+                );*/
             }
             //Insert lists to output list
             return result;
 
         }
-
     }
 
     public static Boolean  userExist(String name,String email) throws SQLException{
@@ -158,9 +157,6 @@ public class DatabaseManagement {
 
             System.out.println("SaveProfile was in DB insert");
         }
-        /*catch (Exception e){
-            System.err.println(e.getMessage());
-        }*/
     }
 
     public static ArrayList<SaveProfile> saveProfileSearch(String user_id) throws SQLException{
@@ -181,7 +177,7 @@ public class DatabaseManagement {
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getDouble("savings_rate")));
-                //Debug
+                //logger
                 /*System.out.printf("%-25s%-25s%-25s%-25s%n",
                         rs.getString("save_id"),
                         rs.getString("id"),
@@ -193,9 +189,6 @@ public class DatabaseManagement {
             return result;
 
         }
-        /*catch(Exception e){
-            System.out.println("(saveProfileSearch) ERROR: "+ e.getMessage());
-        }*/
     }
 
     public static void incomeSourceInsert(
@@ -219,9 +212,7 @@ public class DatabaseManagement {
 
             //System.out.println("IncomeSource was in DB insert"); //Logger
         }
-        /*catch (Exception e){
-            System.err.println("(incomeSourceInsert) ERROR: " + e.getMessage());
-        }*/
+
     }
 
     public static ArrayList<IncomeSource> incomeSourceSearch(
@@ -262,14 +253,8 @@ public class DatabaseManagement {
                 }
                 return result;
             }
-            /*catch (Exception e){
-                System.out.println("(incomeSourceSearch ResultSet) Error: " + e.getMessage());
-            }*/
 
         }
-        /*catch(Exception e){
-            System.out.println("(incomeSourceSearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
-        }*/
     }
 
     public static Integer incomeSourceUpdate(
@@ -297,13 +282,9 @@ public class DatabaseManagement {
             pstmt.executeUpdate();
             return 0;
 
-        }/*catch (Exception e) {
-            System.err.println(e.getMessage());
-            return -1;
-        }*/
+        }
     }
 
-    //Work ...
     public static void savingsCategoryInsert(
             String category_id,String save_id, String user_id,  String name, double percent, String description) throws SQLException
     {
@@ -322,13 +303,9 @@ public class DatabaseManagement {
 
             pstmt.executeUpdate();  //run the INSERT statement
 
-            System.out.println("SavingsCategory was in DB insert");
+            //System.out.println("SavingsCategory was in DB insert");
 
         }
-
-        /*catch (Exception e){
-            System.out.println("(SavingsCategoryInsert) ERROR: "  + e.getMessage());
-        }*/
     }
 
     public static ArrayList<SavingsCategory> savingsCategorySearch(
@@ -355,7 +332,7 @@ public class DatabaseManagement {
                             rs.getDouble("percent"),
                             rs.getString("description")
                     ));
-                    //Debug
+                    //logger
                     /*System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%n",
                             rs.getString("category_id"),
                             rs.getString("save_id"),
@@ -367,14 +344,6 @@ public class DatabaseManagement {
                 }
                 return result;
             }
-            /*catch (Exception e){
-                System.out.println("(SavingsCategorySearch ResultSet) Error: " + e.getMessage());
-            }*/
-
         }
-        /*catch(Exception e){
-            System.out.println("(SavingsCategorySearch Connection or PreparedStatement ) ERROR: "+ e.getMessage());
-        }
-        return null;*/
     }
 }
