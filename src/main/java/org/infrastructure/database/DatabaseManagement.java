@@ -1,15 +1,14 @@
 package org.infrastructure.database;
 
+import org.apache.logging.log4j.*;
 import org.domain.IncomeSource;
 import org.domain.SaveProfile;
 import org.domain.SavingsCategory;
 import org.domain.User;
 
-import java.math.BigDecimal;
+
 import java.sql.*;
 import java.util.ArrayList;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 //https://www.sqlitetutorial.net/sqlite-java/
 
@@ -19,8 +18,11 @@ public class DatabaseManagement {
     private static String URL =
             "jdbc:sqlite:src/main/java/org/infrastructure/database/database.db";
 
+    private static final Logger log = LogManager.getLogger(DatabaseManagement.class.getName());
+
     public static void setUrl(String url){
         URL = url;
+        log.info("URL {} is set ", URL);
     }
 
     public static void createTables()throws SQLException{
@@ -68,6 +70,8 @@ public class DatabaseManagement {
                 stmt.execute(sqlSaveProfile);
                 stmt.execute(SavingsCategory);
                 stmt.execute(IncomeSource);
+
+                log.info("Tables successfully created");
             }
         }
 
@@ -81,6 +85,8 @@ public class DatabaseManagement {
             pstmt.setString(2,name);
             pstmt.setString(3,email);
             pstmt.executeUpdate();  //run the INSERT statement
+
+            log.info("User {} successfully created" , id);
         }
 
     }
@@ -102,13 +108,8 @@ public class DatabaseManagement {
             while (rs.next()){
 
                 result.add(new User(rs.getString("id"),rs.getString("name"),rs.getString("email")));
-
+                log.info("User {} is find!", rs.getString("id"));
                 //Debug
-                /*System.out.printf("%-25s%-25s%-25s%n",
-                        rs.getString("id"),
-                        rs.getString("name"),
-                        rs.getString("email")
-                );*/
             }
             //Insert lists to output list
             return result;
@@ -138,8 +139,13 @@ public class DatabaseManagement {
                 emails.add(rs.getString("email"));
 
             }
-            if(names.contains(name) && emails.contains(email)) return true;
+            if(names.contains(name) && emails.contains(email)){
+                log.info("User {} is exist!", rs.getString("id"));
+                return true;
+            };
+
         }
+        log.info("User {} is not exist!", name);
         return false;
     }
 
@@ -155,7 +161,7 @@ public class DatabaseManagement {
             pstmt.setDouble(4,saving_rate);
             pstmt.executeUpdate();  //run the INSERT statement
 
-            System.out.println("SaveProfile was in DB insert");
+            log.info("SaveProfile {} was in DB insert",save_id);
         }
     }
 
@@ -178,14 +184,8 @@ public class DatabaseManagement {
                         rs.getString("name"),
                         rs.getDouble("savings_rate")));
                 //logger
-                /*System.out.printf("%-25s%-25s%-25s%-25s%n",
-                        rs.getString("save_id"),
-                        rs.getString("id"),
-                        rs.getString("name"),
-                        rs.getDouble("savings_rate")
-                );*/
+                log.info("SaveProfile {} is find.", rs.getString("save_id"));
             }
-
             return result;
 
         }
@@ -210,7 +210,7 @@ public class DatabaseManagement {
 
             pstmt.executeUpdate();  //run the INSERT statement
 
-            //System.out.println("IncomeSource was in DB insert"); //Logger
+            log.info("IncomeSource {} was in DB insert",income_id); //Logger
         }
 
     }
@@ -241,15 +241,7 @@ public class DatabaseManagement {
                             rs.getBoolean("active")
                     ));
                     //Logger
-                    /*System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s%n",
-                            rs.getString("save_id"),
-                            rs.getString("id"),
-                            rs.getString("income_id"),
-                            rs.getString("name"),
-                            rs.getDouble("amount"),
-                            rs.getString("description"),
-                            rs.getBoolean("active")
-                    );*/
+                    log.info("IncomeSource {} is find.", rs.getString("income_id"));
                 }
                 return result;
             }
@@ -257,7 +249,7 @@ public class DatabaseManagement {
         }
     }
 
-    public static Integer incomeSourceUpdate(
+    public static void incomeSourceUpdate(
             String name, double amount,String description, Boolean active,
             String id, String save_id,String income_id) throws SQLException{
 
@@ -280,8 +272,7 @@ public class DatabaseManagement {
             pstmt.setString(7,income_id);
 
             pstmt.executeUpdate();
-            return 0;
-
+            log.info("IncomeSource {} is updated.", name);
         }
     }
 
@@ -303,7 +294,7 @@ public class DatabaseManagement {
 
             pstmt.executeUpdate();  //run the INSERT statement
 
-            //System.out.println("SavingsCategory was in DB insert");
+            log.info("SavingsCategory {} was in DB insert", category_id);
 
         }
     }
@@ -333,14 +324,8 @@ public class DatabaseManagement {
                             rs.getString("description")
                     ));
                     //logger
-                    /*System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%n",
-                            rs.getString("category_id"),
-                            rs.getString("save_id"),
-                            rs.getString("id"),
-                            rs.getString("name"),
-                            rs.getDouble("percent"),
-                            rs.getString("description")
-                    );*/
+                    log.info("SavingsCategory {} is find.", rs.getString("category_id"));
+
                 }
                 return result;
             }

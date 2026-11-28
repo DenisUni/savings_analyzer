@@ -1,15 +1,23 @@
 package org.application;
 
+import org.infrastructure.database.DatabaseManagement;
 import org.presentation.CLI;
+import org.apache.logging.log4j.*;
+
 
 import java.sql.SQLException;
 //https://martinfowler.com/bliki/PresentationDomainDataLayering.html
 //https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html
 
 public class Main {
+
+    private static Logger log = LogManager.getLogger(DatabaseManagement.class.getName());
+
     public static void main(String[] args) {
         String user_id;
         String save_id;
+
+
 
         try {
             user_id = CLI.startPage();

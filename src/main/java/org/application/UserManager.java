@@ -9,11 +9,14 @@ import org.infrastructure.database.DatabaseManagement;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
+import org.apache.logging.log4j.*;
 import java.util.NoSuchElementException;
 
 public class UserManager {
     //___________________________User___________________________________________________
+
+    private static final Logger log = LogManager.getLogger(UserManager.class.getName());
+
 
     //Create class User
     public static User userClassCreate (String name, String email){
@@ -29,15 +32,17 @@ public class UserManager {
     //Save User in DB and create class
     public static void userCreate(String name, String email) throws SQLException{
 
-        if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty())
-            throw new IllegalArgumentException("Invalid name or email");
+        if(name == null || name.trim().isEmpty() || email == null || email.trim().isEmpty()){
+            log.debug("userCreate() Invalid name: {} or email: {}",name,email);
+            throw new IllegalArgumentException("Invalid name or email");}
 
         name = name.trim().toLowerCase();
         email = email.trim().toLowerCase();
 
 
-        if (DatabaseManagement.userExist(name, email))
-            throw new IllegalArgumentException("User already exist");
+        if (DatabaseManagement.userExist(name, email)){
+            log.debug("userCreate() User {} already exist", name);
+            throw new IllegalArgumentException("User already exist");}
 
         User user = userClassCreate(name, email);
 
@@ -49,6 +54,7 @@ public class UserManager {
 
         if (name == null || name.trim().isEmpty()
                 || email == null || email.trim().isEmpty()) {
+            log.debug("userDataSearch() Invalid name: {} or email: {}",name,email);
             throw new IllegalArgumentException("Invalid name or email");
         }
 
@@ -60,9 +66,11 @@ public class UserManager {
         ArrayList<User> usersList =  DatabaseManagement.userSearch(name,email);
 
         if(usersList.isEmpty() ) {
+            log.debug("userDataSearch() User {} isn´t found", name);
             throw new NoSuchElementException("User not found!");
         }
         if(usersList.size() > 1){
+            log.error("userDataSearch() User {} and User {} are duplicate", usersList.get(0).getId(), usersList.get(1).getId());
             throw new IllegalStateException("Duplicate users found!");
         }
         String user_id = usersList.get(0).getId();
@@ -88,8 +96,9 @@ public class UserManager {
         if(user_id == null || user_id.trim().isEmpty()
                 || name == null || name.trim().isEmpty()
                 || saving_rate <= 0 || saving_rate > 100
-                || !Double.isFinite(saving_rate))
-            throw new IllegalArgumentException("Invalid SaveProfile parameters!");
+                || !Double.isFinite(saving_rate)){
+            log.debug("saveProfile() Invalid name: {} or email: {}",name, saving_rate);
+            throw new IllegalArgumentException("Invalid SaveProfile parameters!");}
 
         name = name.trim().toLowerCase();
 
@@ -99,17 +108,6 @@ public class UserManager {
 
     public static ArrayList<SaveProfile> saveProfilesSearch(String user_id) throws SQLException{
         return DatabaseManagement.saveProfileSearch(user_id);
-    }
-
-    public static SaveProfile saveProfileSearch(String user_id, String save_id) throws SQLException{
-
-        ArrayList<SaveProfile> saveProfilesList = saveProfilesSearch(user_id);
-
-        for(SaveProfile saveProfile1 : saveProfilesList  ){
-            if(saveProfile1.getSave_id().equals(save_id))
-                return saveProfile1;
-        }
-        throw new NoSuchElementException("SaveProfile not found!");
     }
 
     //________________________________IncomeSource___________________________________________________
@@ -137,8 +135,9 @@ public class UserManager {
                 save_id == null || save_id.trim().isEmpty() ||
                 name == null || name.trim().isEmpty() ||
                 amount <= 0 ||
-                !Double.isFinite(amount))
-            throw new IllegalArgumentException("Invalid incomeSource parameters");
+                !Double.isFinite(amount)){
+            log.debug("incomeSourceCreate() Invalid name: {} or amount: {} or userId: {} or saveID {}",name, amount,user_id, save_id);
+            throw new IllegalArgumentException("Invalid incomeSource parameters");}
 
         name = name.trim().toLowerCase();
 
@@ -155,8 +154,9 @@ public class UserManager {
         if(save_id == null || save_id.trim().isEmpty() ||
                 name == null || name.trim().isEmpty() ||
                 amount  <= 0 ||
-                !Double.isFinite(amount))
-            throw new IllegalArgumentException("Invalid incomeSource parameters");
+                !Double.isFinite(amount)){
+            log.debug("incomeSourceUpdate() Invalid name: {} or amount: {} or  saveID {}",name, amount, save_id);
+            throw new IllegalArgumentException("Invalid incomeSource parameters");}
 
         name = name.trim().toLowerCase();
 
@@ -195,6 +195,7 @@ public class UserManager {
                 || save_id == null || save_id.trim().isEmpty()
                 || percent < 0 || percent >= 100
                 || !Double.isFinite(percent)) {
+            log.debug("savingsCategory() Invalid name: {} or ID: {} or percent: {} or  saveID {}",name, id, percent, save_id);
             throw new IllegalArgumentException("Invalid savingsCategory parameters");
         }
 
@@ -207,12 +208,5 @@ public class UserManager {
     public static ArrayList<SavingsCategory> savingsCategorySearch (String user_id, String save_id) throws SQLException{
         return DatabaseManagement.savingsCategorySearch(user_id,save_id);
     }
-
-
-
-    public static double abc (double a,double b){
-        return a - b;
-    }
-
 
 }
