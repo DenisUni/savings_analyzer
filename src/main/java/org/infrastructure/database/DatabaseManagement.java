@@ -310,6 +310,7 @@ public class DatabaseManagement {
             pstmt.setString(1, user_id);
             pstmt.setString(2, saveProfile_id);
 
+
             try( ResultSet rs = pstmt.executeQuery()) {
 
                 ArrayList<SavingsCategory> result = new ArrayList<SavingsCategory>();
